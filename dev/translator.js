@@ -253,7 +253,7 @@ body{
                     </span>
                 `;
 
-                container.appendChild(button);
+                container.insertAdjacentElement("afterend", button);
 
             });
 
@@ -516,34 +516,8 @@ function updateButtons(lang) {
 
     }
 
-}
-// ==========================================
-// KEEP SPANISH BUTTON ALIVE
-// ==========================================
+ }
 
-function watchTranslatorContainer() {
-
-    const observer = new MutationObserver(function () {
-
-        createHtml();
-
-        registerSpanishButtons();
-
-        updateButtons(
-            localStorage.getItem(CONFIG.storageKey) || "en"
-        );
-
-    });
-
-    observer.observe(document.body, {
-
-        childList: true,
-
-        subtree: true
-
-    });
-
-}
     // ==========================================
     // RESTORE PREVIOUS LANGUAGE
     // ==========================================
