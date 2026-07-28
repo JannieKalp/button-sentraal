@@ -517,6 +517,33 @@ function updateButtons(lang) {
     }
 
 }
+// ==========================================
+// KEEP SPANISH BUTTON ALIVE
+// ==========================================
+
+function watchTranslatorContainer() {
+
+    const observer = new MutationObserver(function () {
+
+        createHtml();
+
+        registerSpanishButtons();
+
+        updateButtons(
+            localStorage.getItem(CONFIG.storageKey) || "en"
+        );
+
+    });
+
+    observer.observe(document.body, {
+
+        childList: true,
+
+        subtree: true
+
+    });
+
+}
     // ==========================================
     // RESTORE PREVIOUS LANGUAGE
     // ==========================================
@@ -536,19 +563,21 @@ function updateButtons(lang) {
 
     function start() {
 
-        injectStyles();
+    injectStyles();
 
-        createHtml();
+    createHtml();
 
-        loadGoogleTranslate();
+    loadGoogleTranslate();
 
-        registerSpanishButtons();
+    registerSpanishButtons();
 
-        registerAfrikaansButton();
+    registerAfrikaansButton();
 
-        restoreLanguage();
+    restoreLanguage();
 
-    }
+    watchTranslatorContainer();
+
+}
 
     // ==========================================
     // BOOT
