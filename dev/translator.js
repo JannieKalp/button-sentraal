@@ -253,7 +253,7 @@ body{
                     </span>
                 `;
 
-                container.insertAdjacentElement("afterend", button);
+                container.appendChild(button);
 
             });
 
@@ -516,8 +516,7 @@ function updateButtons(lang) {
 
     }
 
- }
-
+}
     // ==========================================
     // RESTORE PREVIOUS LANGUAGE
     // ==========================================
@@ -537,19 +536,19 @@ function updateButtons(lang) {
 
     function start() {
 
-    injectStyles();
+        injectStyles();
 
-    createHtml();
+        createHtml();
 
-    loadGoogleTranslate();
+        loadGoogleTranslate();
 
-    registerSpanishButtons();
+        registerSpanishButtons();
 
-    registerAfrikaansButton();
+        registerAfrikaansButton();
 
-    restoreLanguage();
+        restoreLanguage();
 
-}
+    }
 
     // ==========================================
     // BOOT
