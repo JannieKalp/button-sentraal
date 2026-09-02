@@ -1,35 +1,46 @@
 (function () {
   "use strict";
 
-  // Na'Vi test image
   const NAVI_IMAGE =
     "https://d1yei2z3i6k35z.cloudfront.net/10602272/6a9802a28dcee0.81540527_Na-vi.gif";
 
-  // Find the location where Na'Vi should appear
   const container = document.getElementById("navi-companion");
 
   if (!container) {
-    console.warn("Na'Vi: #navi-companion was not found on this page.");
+    console.warn("Na’Vi: #navi-companion was not found on this page.");
     return;
   }
 
-  // Create the Na'Vi image
+  // Read information supplied by the Systeme.io page
+  const page = container.dataset.naviPage || "unknown-page";
+  const context = container.dataset.naviContext || "general";
+
+  // Create Na’Vi image
   const image = document.createElement("img");
 
   image.src = NAVI_IMAGE;
-  image.alt = "Na'Vi — CONTROL Companion";
+  image.alt = "Na’Vi — CONTROL Companion";
 
   image.style.width = "120px";
   image.style.height = "auto";
   image.style.cursor = "pointer";
   image.style.display = "block";
 
-  // Create the test message
+  // Create test message
   const message = document.createElement("div");
 
   message.innerHTML = `
     <strong>Hi, I'm Na’Vi 👋</strong>
-    <p>This is a test of your CONTROL Companion.</p>
+
+    <p>
+      This is a page-awareness test.
+    </p>
+
+    <p>
+      <strong>Page:</strong> ${page}<br>
+      <strong>Context:</strong> ${context}
+    </p>
+
     <button type="button">Close</button>
   `;
 
@@ -45,7 +56,7 @@
   message.style.lineHeight = "1.5";
   message.style.boxSizing = "border-box";
 
-  // Click Na'Vi → open message
+  // Click Na’Vi → open message
   image.addEventListener("click", function () {
     message.style.display = "block";
   });
@@ -55,7 +66,7 @@
     message.style.display = "none";
   });
 
-  // Add everything to the container
+  // Add Na’Vi to the Systeme.io location
   container.appendChild(message);
   container.appendChild(image);
 
