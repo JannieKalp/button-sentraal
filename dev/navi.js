@@ -3,598 +3,2641 @@
 
   /* =========================================================
      NA'VI — CONTROL COMPANION
-     UI TEST VERSION
+     Production Companion
      ========================================================= */
 
-  const NAVI_IMAGE =
-    "https://d1yei2z3i6k35z.cloudfront.net/10602272/6a9802a28dcee0.81540527_Na-vi.gif";
+  const CONFIG = {
 
-  /* ---------------------------------------------------------
-     FIND THE SYSTEME.IO NA'VI LOCATION
-     --------------------------------------------------------- */
+    /* -------------------------------------------------------
+       CONFIRMED FRIENDLY WAVE IMAGE
+       ------------------------------------------------------- */
 
-  const container = document.getElementById("navi-companion");
+    defaultImage:
+      "https://d1yei2z3i6k35z.cloudfront.net/10602272/6a9802a28dcee0.81540527_Na-vi.gif",
+
+
+    /* -------------------------------------------------------
+       SECURE BACKEND
+       
+       This remains empty until the secure Na'Vi backend
+       is connected.
+       
+       NEVER place an OpenAI API key in this file.
+       ------------------------------------------------------- */
+
+    apiEndpoint: "",
+
+
+    /* -------------------------------------------------------
+       NA'VI SIZE
+       ------------------------------------------------------- */
+
+    characterWidth: 120,
+
+
+    /* -------------------------------------------------------
+       CHAT SIZE
+       ------------------------------------------------------- */
+
+    chatWidth: 380,
+    chatHeight: 560,
+
+
+    /* -------------------------------------------------------
+       CHAT POSITION
+       ------------------------------------------------------- */
+
+    chatRight: 20,
+    chatBottom: 20,
+
+
+    /* -------------------------------------------------------
+       DRAG SETTINGS
+       ------------------------------------------------------- */
+
+    dragThreshold: 6,
+
+    positionStorageKey:
+      "navi_companion_position"
+
+  };
+
+
+  /* =========================================================
+     NA'VI STATES
+     ========================================================= */
+
+  const NAVI_STATES = {
+
+    friendlyWave: {
+
+      name:
+        "Friendly Wave",
+
+      purpose:
+        "Welcome & Greeting",
+
+      image:
+        CONFIG.defaultImage
+
+    },
+
+
+    confidentGuide: {
+
+      name:
+        "Confident Guide",
+
+      purpose:
+        "Decision & Direction",
+
+      image:
+        ""
+
+    },
+
+
+    encouragingSupport: {
+
+      name:
+        "Encouraging Support",
+
+      purpose:
+        "Motivation & Reassurance",
+
+      image:
+        ""
+
+    },
+
+
+    openArms: {
+
+      name:
+        "Open Arms",
+
+      purpose:
+        "Welcome Back & Recovery",
+
+      image:
+        ""
+
+    },
+
+
+    onTheMove: {
+
+      name:
+        "On the Move",
+
+      purpose:
+        "Action & Implementation",
+
+      image:
+        ""
+
+    },
+
+
+    thoughtfulReflection: {
+
+      name:
+        "Thoughtful Reflection",
+
+      purpose:
+        "Reflection & Insight",
+
+      image:
+        ""
+
+    },
+
+
+    insightGuide: {
+
+      name:
+        "Insight Guide",
+
+      purpose:
+        "Teaching & Clarifying",
+
+      image:
+        ""
+
+    },
+
+
+    calmPresence: {
+
+      name:
+        "Calm Presence",
+
+      purpose:
+        "Emotional Support & Calm",
+
+      image:
+        ""
+
+    }
+
+  };
+
+
+  /* =========================================================
+     FIND SYSTEME.IO NA'VI LOCATION
+     ========================================================= */
+
+  const container =
+    document.getElementById(
+      "navi-companion"
+    );
+
 
   if (!container) {
-    console.warn(
-      "Na’Vi: #navi-companion was not found on this page."
-    );
     return;
   }
 
-  /* ---------------------------------------------------------
-     READ PAGE INFORMATION FROM SYSTEME.IO
-     --------------------------------------------------------- */
+
+  /* =========================================================
+     PAGE CONTEXT
+     
+     Used internally by the future AI/backend.
+     Not displayed to the learner.
+     ========================================================= */
 
   const page =
-    container.dataset.naviPage || "unknown-page";
+    container.dataset.naviPage ||
+    "unknown-page";
+
 
   const context =
-    container.dataset.naviContext || "general";
+    container.dataset.naviContext ||
+    "general";
 
-  /* ---------------------------------------------------------
-     CREATE THE MAIN NA'VI WRAPPER
-     --------------------------------------------------------- */
 
-  const wrapper = document.createElement("div");
+  /* =========================================================
+     SESSION
+     ========================================================= */
 
-  wrapper.id = "navi-widget";
+  const SESSION_KEY =
+    "navi_session_id";
 
-  /* ---------------------------------------------------------
-     WRAPPER STYLING
-     --------------------------------------------------------- */
 
-  Object.assign(wrapper.style, {
-    position: "relative",
-    width: "100%",
-    maxWidth: "390px",
-    marginLeft: "auto",
-    fontFamily: "Arial, sans-serif",
-    boxSizing: "border-box",
-    textAlign: "left"
-  });
+  let sessionId =
+    sessionStorage.getItem(
+      SESSION_KEY
+    );
 
-  /* ---------------------------------------------------------
+
+  if (!sessionId) {
+
+    sessionId =
+      "navi-" +
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(2, 10);
+
+
+    sessionStorage.setItem(
+      SESSION_KEY,
+      sessionId
+    );
+
+  }
+
+
+  /* =========================================================
+     ACTIVE STATE
+     ========================================================= */
+
+  let activeState =
+    "friendlyWave";
+
+
+  /* =========================================================
+     CHAT OPEN STATE
+     ========================================================= */
+
+  let chatOpen =
+    false;
+
+
+  /* =========================================================
+     CREATE NA'VI PAGE WRAPPER
+     
+     The wrapper remains in the normal page flow.
+     
+     This means Na'Vi initially appears exactly where
+     the Systeme.io HTML block has been placed.
+     ========================================================= */
+
+  const wrapper =
+    document.createElement(
+      "div"
+    );
+
+
+  wrapper.id =
+    "navi-widget";
+
+
+  Object.assign(
+    wrapper.style,
+    {
+
+      position:
+        "relative",
+
+      width:
+        "100%",
+
+      boxSizing:
+        "border-box",
+
+      textAlign:
+        "left",
+
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, " +
+        "'Segoe UI', Arial, sans-serif",
+
+      lineHeight:
+        "normal",
+
+      margin:
+        "0",
+
+      padding:
+        "0"
+
+    }
+  );
+
+
+  /* =========================================================
+     NA'VI BUTTON
+     ========================================================= */
+
+  const naviButton =
+    document.createElement(
+      "button"
+    );
+
+
+  naviButton.type =
+    "button";
+
+
+  naviButton.setAttribute(
+    "aria-label",
+    "Open Na’Vi"
+  );
+
+
+  naviButton.setAttribute(
+    "title",
+    "Na’Vi"
+  );
+
+
+  Object.assign(
+    naviButton.style,
+    {
+
+      display:
+        "inline-flex",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center",
+
+      margin:
+        "0",
+
+      padding:
+        "0",
+
+      border:
+        "0",
+
+      background:
+        "transparent",
+
+      cursor:
+        "grab",
+
+      lineHeight:
+        "0",
+
+      appearance:
+        "none",
+
+      WebkitAppearance:
+        "none",
+
+      touchAction:
+        "none",
+
+      userSelect:
+        "none",
+
+      WebkitUserSelect:
+        "none"
+
+    }
+  );
+
+
+  /* =========================================================
+     MAIN NA'VI IMAGE
+     ========================================================= */
+
+  const mainNavi =
+    document.createElement(
+      "img"
+    );
+
+
+  mainNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image ||
+    CONFIG.defaultImage;
+
+
+  mainNavi.alt =
+    "Na’Vi — CONTROL Companion";
+
+
+  mainNavi.draggable =
+    false;
+
+
+  mainNavi.loading =
+    "eager";
+
+
+  mainNavi.decoding =
+    "async";
+
+
+  Object.assign(
+    mainNavi.style,
+    {
+
+      width:
+        CONFIG.characterWidth +
+        "px",
+
+      height:
+        "auto",
+
+      maxWidth:
+        "100%",
+
+      display:
+        "block",
+
+      userSelect:
+        "none",
+
+      WebkitUserDrag:
+        "none",
+
+      pointerEvents:
+        "none"
+
+    }
+  );
+
+
+  naviButton.appendChild(
+    mainNavi
+  );
+
+
+  /* =========================================================
      CHAT WINDOW
-     --------------------------------------------------------- */
+     
+     IMPORTANT:
+     
+     The chat is fixed to the browser viewport.
+     
+     It is independent from Na'Vi's position.
+     ========================================================= */
 
-  const chat = document.createElement("div");
+  const chat =
+    document.createElement(
+      "section"
+    );
 
-  chat.id = "navi-chat";
 
-  Object.assign(chat.style, {
-    display: "none",
-    position: "absolute",
-    right: "0",
-    bottom: "145px",
-    width: "360px",
-    maxWidth: "calc(100vw - 30px)",
-    height: "520px",
-    maxHeight: "70vh",
-    background: "#ffffff",
-    border: "1px solid #d9e2d5",
-    borderRadius: "18px",
-    boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
-    overflow: "hidden",
-    zIndex: "99999",
-    boxSizing: "border-box",
-    flexDirection: "column"
-  });
+  chat.id =
+    "navi-chat";
 
-  /* ---------------------------------------------------------
+
+  chat.setAttribute(
+    "aria-label",
+    "Chat with Na’Vi"
+  );
+
+
+  Object.assign(
+    chat.style,
+    {
+
+      display:
+        "none",
+
+      position:
+        "fixed",
+
+      right:
+        CONFIG.chatRight +
+        "px",
+
+      bottom:
+        CONFIG.chatBottom +
+        "px",
+
+      width:
+        CONFIG.chatWidth +
+        "px",
+
+      maxWidth:
+        "calc(100vw - 30px)",
+
+      height:
+        CONFIG.chatHeight +
+        "px",
+
+      maxHeight:
+        "calc(100vh - 40px)",
+
+      background:
+        "#ffffff",
+
+      border:
+        "1px solid #dfe7dc",
+
+      borderRadius:
+        "20px",
+
+      boxShadow:
+        "0 16px 50px rgba(0,0,0,0.18)",
+
+      overflow:
+        "hidden",
+
+      zIndex:
+        "2147483000",
+
+      boxSizing:
+        "border-box",
+
+      flexDirection:
+        "column"
+
+    }
+  );
+
+
+  /* =========================================================
      CHAT HEADER
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  const header = document.createElement("div");
+  const header =
+    document.createElement(
+      "header"
+    );
 
-  Object.assign(header.style, {
-    padding: "16px 18px",
-    borderBottom: "1px solid #e8eee5",
-    background: "#ffffff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexShrink: "0"
-  });
 
-  const headerLeft = document.createElement("div");
+  Object.assign(
+    header.style,
+    {
 
-  const title = document.createElement("div");
+      display:
+        "flex",
 
-  title.textContent = "Chat with Na’Vi 🌿";
+      alignItems:
+        "center",
 
-  Object.assign(title.style, {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#245c3a",
-    marginBottom: "3px"
-  });
+      justifyContent:
+        "space-between",
 
-  const subtitle = document.createElement("div");
+      padding:
+        "15px 17px",
+
+      background:
+        "#ffffff",
+
+      borderBottom:
+        "1px solid #edf1eb",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  const headerIdentity =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    headerIdentity.style,
+    {
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      gap:
+        "10px",
+
+      minWidth:
+        "0"
+
+    }
+  );
+
+
+  const headerNavi =
+    document.createElement(
+      "img"
+    );
+
+
+  headerNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image ||
+    CONFIG.defaultImage;
+
+
+  headerNavi.alt =
+    "";
+
+
+  Object.assign(
+    headerNavi.style,
+    {
+
+      width:
+        "38px",
+
+      height:
+        "38px",
+
+      objectFit:
+        "contain",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  const headerText =
+    document.createElement(
+      "div"
+    );
+
+
+  const title =
+    document.createElement(
+      "div"
+    );
+
+
+  title.textContent =
+    "Na’Vi";
+
+
+  Object.assign(
+    title.style,
+    {
+
+      fontSize:
+        "17px",
+
+      fontWeight:
+        "700",
+
+      color:
+        "#245c3a",
+
+      lineHeight:
+        "1.2"
+
+    }
+  );
+
+
+  const subtitle =
+    document.createElement(
+      "div"
+    );
+
 
   subtitle.textContent =
-    "Your CONTROL Companion is here to help.";
+    "Your CONTROL Companion";
 
-  Object.assign(subtitle.style, {
-    fontSize: "12px",
-    color: "#777777"
-  });
 
-  headerLeft.appendChild(title);
-  headerLeft.appendChild(subtitle);
+  Object.assign(
+    subtitle.style,
+    {
 
-  /* Close button */
+      marginTop:
+        "3px",
 
-  const closeButton = document.createElement("button");
+      fontSize:
+        "12px",
 
-  closeButton.type = "button";
-  closeButton.textContent = "×";
-  closeButton.setAttribute("aria-label", "Close Na’Vi chat");
+      color:
+        "#737a73",
 
-  Object.assign(closeButton.style, {
-    width: "32px",
-    height: "32px",
-    border: "none",
-    background: "transparent",
-    fontSize: "25px",
-    lineHeight: "25px",
-    color: "#555555",
-    cursor: "pointer",
-    padding: "0"
-  });
+      lineHeight:
+        "1.3"
 
-  header.appendChild(headerLeft);
-  header.appendChild(closeButton);
+    }
+  );
 
-  /* ---------------------------------------------------------
+
+  headerText.appendChild(
+    title
+  );
+
+
+  headerText.appendChild(
+    subtitle
+  );
+
+
+  headerIdentity.appendChild(
+    headerNavi
+  );
+
+
+  headerIdentity.appendChild(
+    headerText
+  );
+
+
+  /* =========================================================
+     CLOSE BUTTON
+     ========================================================= */
+
+  const closeButton =
+    document.createElement(
+      "button"
+    );
+
+
+  closeButton.type =
+    "button";
+
+
+  closeButton.textContent =
+    "×";
+
+
+  closeButton.setAttribute(
+    "aria-label",
+    "Close Na’Vi"
+  );
+
+
+  Object.assign(
+    closeButton.style,
+    {
+
+      width:
+        "36px",
+
+      height:
+        "36px",
+
+      border:
+        "0",
+
+      borderRadius:
+        "50%",
+
+      background:
+        "transparent",
+
+      color:
+        "#555b55",
+
+      fontSize:
+        "26px",
+
+      lineHeight:
+        "36px",
+
+      textAlign:
+        "center",
+
+      cursor:
+        "pointer",
+
+      padding:
+        "0",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  header.appendChild(
+    headerIdentity
+  );
+
+
+  header.appendChild(
+    closeButton
+  );
+
+
+  /* =========================================================
      CHAT BODY
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  const body = document.createElement("div");
+  const body =
+    document.createElement(
+      "div"
+    );
 
-  Object.assign(body.style, {
-    flex: "1",
-    overflowY: "auto",
-    padding: "18px",
-    background: "#fcfdfb",
-    boxSizing: "border-box"
-  });
 
-  /* ---------------------------------------------------------
-     NA'VI MESSAGE
-     --------------------------------------------------------- */
+  Object.assign(
+    body.style,
+    {
 
-  const naviMessageRow = document.createElement("div");
+      flex:
+        "1",
 
-  Object.assign(naviMessageRow.style, {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "10px",
-    marginBottom: "16px"
-  });
+      overflowY:
+        "auto",
 
-  const smallNavi = document.createElement("img");
+      padding:
+        "20px",
 
-  smallNavi.src = NAVI_IMAGE;
-  smallNavi.alt = "Na’Vi";
+      background:
+        "#fbfcfa",
 
-  Object.assign(smallNavi.style, {
-    width: "42px",
-    height: "auto",
-    flexShrink: "0"
-  });
+      boxSizing:
+        "border-box"
 
-  const naviBubble = document.createElement("div");
+    }
+  );
 
-  Object.assign(naviBubble.style, {
-    background: "#ffffff",
-    border: "1px solid #e8e8e8",
-    borderRadius: "14px",
-    padding: "12px 14px",
-    fontSize: "13px",
-    lineHeight: "1.5",
-    color: "#333333",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
-  });
 
-  const naviGreeting = document.createElement("strong");
+  /* =========================================================
+     WELCOME MESSAGE
+     ========================================================= */
 
-  naviGreeting.textContent = "Hi, I’m Na’Vi! 🌿";
+  const welcomeRow =
+    document.createElement(
+      "div"
+    );
 
-  const naviText = document.createElement("p");
 
-  naviText.textContent =
-    "I’m here to help you navigate your CONTROL learning experience with clarity, confidence and control.";
+  Object.assign(
+    welcomeRow.style,
+    {
 
-  Object.assign(naviText.style, {
-    margin: "7px 0 0 0"
-  });
+      display:
+        "flex",
 
-  naviBubble.appendChild(naviGreeting);
-  naviBubble.appendChild(naviText);
+      alignItems:
+        "flex-start",
 
-  naviMessageRow.appendChild(smallNavi);
-  naviMessageRow.appendChild(naviBubble);
+      gap:
+        "10px",
 
-  body.appendChild(naviMessageRow);
+      marginBottom:
+        "18px"
 
-  /* ---------------------------------------------------------
-     TEST STUDENT MESSAGE
-     --------------------------------------------------------- */
+    }
+  );
 
-  const studentBubble = document.createElement("div");
 
-  studentBubble.textContent =
-    "I’m feeling overwhelmed and I don’t know where to start.";
+  const welcomeNavi =
+    document.createElement(
+      "img"
+    );
 
-  Object.assign(studentBubble.style, {
-    marginLeft: "48px",
-    marginBottom: "16px",
-    background: "#eef5ea",
-    borderRadius: "14px",
-    padding: "12px 14px",
-    fontSize: "13px",
-    lineHeight: "1.5",
-    color: "#333333"
-  });
 
-  body.appendChild(studentBubble);
+  welcomeNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image ||
+    CONFIG.defaultImage;
 
-  /* ---------------------------------------------------------
-     TEST NA'VI RESPONSE
-     --------------------------------------------------------- */
 
-  const responseRow = document.createElement("div");
+  welcomeNavi.alt =
+    "";
 
-  Object.assign(responseRow.style, {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "10px",
-    marginBottom: "16px"
-  });
 
-  const responseNavi = document.createElement("img");
+  Object.assign(
+    welcomeNavi.style,
+    {
 
-  responseNavi.src = NAVI_IMAGE;
-  responseNavi.alt = "Na’Vi";
+      width:
+        "42px",
 
-  Object.assign(responseNavi.style, {
-    width: "42px",
-    height: "auto",
-    flexShrink: "0"
-  });
+      height:
+        "42px",
 
-  const responseBubble = document.createElement("div");
+      objectFit:
+        "contain",
 
-  Object.assign(responseBubble.style, {
-    background: "#ffffff",
-    border: "1px solid #e8e8e8",
-    borderRadius: "14px",
-    padding: "12px 14px",
-    fontSize: "13px",
-    lineHeight: "1.5",
-    color: "#333333",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
-  });
+      flexShrink:
+        "0"
 
-  const responseStrong = document.createElement("strong");
+    }
+  );
 
-  responseStrong.textContent =
-    "Let’s slow this down. 🌿";
 
-  const responseText = document.createElement("p");
+  const welcomeBubble =
+    document.createElement(
+      "div"
+    );
 
-  responseText.textContent =
-    "You don’t need to figure everything out at once. Let’s focus on one next step.";
 
-  Object.assign(responseText.style, {
-    margin: "7px 0 0 0"
-  });
+  Object.assign(
+    welcomeBubble.style,
+    {
 
-  responseBubble.appendChild(responseStrong);
-  responseBubble.appendChild(responseText);
+      background:
+        "#ffffff",
 
-  responseRow.appendChild(responseNavi);
-  responseRow.appendChild(responseBubble);
+      border:
+        "1px solid #e5eae3",
 
-  body.appendChild(responseRow);
+      borderRadius:
+        "15px",
 
-  /* ---------------------------------------------------------
+      padding:
+        "13px 15px",
+
+      color:
+        "#303530",
+
+      fontSize:
+        "13px",
+
+      lineHeight:
+        "1.55",
+
+      boxShadow:
+        "0 2px 8px rgba(0,0,0,0.04)"
+
+    }
+  );
+
+
+  const welcomeTitle =
+    document.createElement(
+      "strong"
+    );
+
+
+  welcomeTitle.textContent =
+    "Hi, I’m Na’Vi.";
+
+
+  Object.assign(
+    welcomeTitle.style,
+    {
+
+      display:
+        "block",
+
+      marginBottom:
+        "5px",
+
+      color:
+        "#245c3a",
+
+      fontSize:
+        "14px"
+
+    }
+  );
+
+
+  const welcomeText =
+    document.createElement(
+      "div"
+    );
+
+
+  welcomeText.textContent =
+    "I’m here to help you move through your CONTROL learning journey with clarity, confidence and control.";
+
+
+  welcomeBubble.appendChild(
+    welcomeTitle
+  );
+
+
+  welcomeBubble.appendChild(
+    welcomeText
+  );
+
+
+  welcomeRow.appendChild(
+    welcomeNavi
+  );
+
+
+  welcomeRow.appendChild(
+    welcomeBubble
+  );
+
+
+  body.appendChild(
+    welcomeRow
+  );
+
+
+  /* =========================================================
+     QUICK ACTION INTRODUCTION
+     ========================================================= */
+
+  const quickIntro =
+    document.createElement(
+      "div"
+    );
+
+
+  quickIntro.textContent =
+    "What would you like help with?";
+
+
+  Object.assign(
+    quickIntro.style,
+    {
+
+      margin:
+        "0 0 11px 52px",
+
+      fontSize:
+        "13px",
+
+      fontWeight:
+        "600",
+
+      color:
+        "#343934"
+
+    }
+  );
+
+
+  body.appendChild(
+    quickIntro
+  );
+
+
+  /* =========================================================
      QUICK ACTIONS
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  const quickTitle = document.createElement("div");
+  const quickActions =
+    document.createElement(
+      "div"
+    );
 
-  quickTitle.textContent =
-    "How are you feeling right now?";
 
-  Object.assign(quickTitle.style, {
-    fontWeight: "700",
-    fontSize: "13px",
-    margin: "8px 0 10px 48px",
-    color: "#333333"
-  });
+  Object.assign(
+    quickActions.style,
+    {
 
-  body.appendChild(quickTitle);
+      display:
+        "flex",
 
-  const quickActions = document.createElement("div");
+      flexWrap:
+        "wrap",
 
-  Object.assign(quickActions.style, {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "7px",
-    marginLeft: "48px",
-    marginBottom: "18px"
-  });
+      gap:
+        "8px",
+
+      margin:
+        "0 0 22px 52px"
+
+    }
+  );
+
 
   const quickOptions = [
-    "Overwhelmed",
-    "Not Sure",
-    "Behind",
-    "Need Support",
-    "Other"
+
+    {
+      label:
+        "I’m overwhelmed",
+
+      prompt:
+        "I’m feeling overwhelmed and need help knowing where to start."
+
+    },
+
+    {
+      label:
+        "My next step",
+
+      prompt:
+        "Help me identify my next step."
+
+    },
+
+    {
+      label:
+        "Navigate my course",
+
+      prompt:
+        "Help me understand where I am in my CONTROL learning journey."
+
+    },
+
+    {
+      label:
+        "Reflect",
+
+      prompt:
+        "Help me reflect on what I’m learning."
+
+    }
+
   ];
 
-  quickOptions.forEach(function (option) {
 
-    const button = document.createElement("button");
+  quickOptions.forEach(
+    function (option) {
 
-    button.type = "button";
-    button.textContent = option;
+      const button =
+        document.createElement(
+          "button"
+        );
 
-    Object.assign(button.style, {
-      background: "#ffffff",
-      border: "1px solid #d8dfd5",
-      borderRadius: "18px",
-      padding: "7px 10px",
-      fontSize: "11px",
-      color: "#333333",
-      cursor: "pointer"
-    });
 
-    button.addEventListener("click", function () {
+      button.type =
+        "button";
 
-      addStudentMessage(option);
 
-    });
+      button.textContent =
+        option.label;
 
-    quickActions.appendChild(button);
 
-  });
+      Object.assign(
+        button.style,
+        {
 
-  body.appendChild(quickActions);
+          border:
+            "1px solid #d7e0d3",
 
-  /* ---------------------------------------------------------
-     PAGE CONTEXT — TEMPORARY TEST DISPLAY
-     --------------------------------------------------------- */
+          borderRadius:
+            "18px",
 
-  const contextInfo = document.createElement("div");
+          background:
+            "#ffffff",
 
-  contextInfo.textContent =
-    "Page: " + page + " | Context: " + context;
+          color:
+            "#31563e",
 
-  Object.assign(contextInfo.style, {
-    fontSize: "10px",
-    color: "#999999",
-    textAlign: "center",
-    marginTop: "10px"
-  });
+          padding:
+            "8px 12px",
 
-  body.appendChild(contextInfo);
+          fontSize:
+            "12px",
 
-  /* ---------------------------------------------------------
+          fontWeight:
+            "500",
+
+          cursor:
+            "pointer"
+
+        }
+      );
+
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          submitUserMessage(
+            option.prompt
+          );
+
+        }
+      );
+
+
+      quickActions.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  body.appendChild(
+    quickActions
+  );
+
+
+  /* =========================================================
+     MESSAGE AREA
+     ========================================================= */
+
+  const messages =
+    document.createElement(
+      "div"
+    );
+
+
+  messages.id =
+    "navi-messages";
+
+
+  body.appendChild(
+    messages
+  );
+
+
+  /* =========================================================
      INPUT AREA
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  const inputArea = document.createElement("div");
+  const inputArea =
+    document.createElement(
+      "div"
+    );
 
-  Object.assign(inputArea.style, {
-    padding: "10px",
-    borderTop: "1px solid #e8eee5",
-    background: "#ffffff",
-    display: "flex",
-    gap: "8px",
-    alignItems: "center",
-    flexShrink: "0",
-    boxSizing: "border-box"
-  });
 
-  const input = document.createElement("input");
+  Object.assign(
+    inputArea.style,
+    {
 
-  input.type = "text";
-  input.placeholder = "Type your message to Na’Vi...";
-  input.setAttribute("aria-label", "Message Na’Vi");
+      display:
+        "flex",
 
-  Object.assign(input.style, {
-    flex: "1",
-    minWidth: "0",
-    height: "42px",
-    border: "1px solid #d9dfd7",
-    borderRadius: "12px",
-    padding: "0 12px",
-    fontSize: "13px",
-    outline: "none",
-    boxSizing: "border-box"
-  });
+      alignItems:
+        "center",
 
-  const sendButton = document.createElement("button");
+      gap:
+        "8px",
 
-  sendButton.type = "button";
-  sendButton.textContent = "➤";
-  sendButton.setAttribute("aria-label", "Send message");
+      padding:
+        "11px",
 
-  Object.assign(sendButton.style, {
-    width: "42px",
-    height: "42px",
-    border: "none",
-    borderRadius: "50%",
-    background: "#176b3a",
-    color: "#ffffff",
-    fontSize: "18px",
-    cursor: "pointer",
-    flexShrink: "0"
-  });
+      background:
+        "#ffffff",
 
-  inputArea.appendChild(input);
-  inputArea.appendChild(sendButton);
+      borderTop:
+        "1px solid #edf1eb",
 
-  /* ---------------------------------------------------------
+      flexShrink:
+        "0",
+
+      boxSizing:
+        "border-box"
+
+    }
+  );
+
+
+  const input =
+    document.createElement(
+      "input"
+    );
+
+
+  input.type =
+    "text";
+
+
+  input.placeholder =
+    "Ask Na’Vi...";
+
+
+  input.setAttribute(
+    "aria-label",
+    "Message Na’Vi"
+  );
+
+
+  Object.assign(
+    input.style,
+    {
+
+      flex:
+        "1",
+
+      minWidth:
+        "0",
+
+      height:
+        "44px",
+
+      border:
+        "1px solid #d8dfd6",
+
+      borderRadius:
+        "13px",
+
+      padding:
+        "0 13px",
+
+      fontSize:
+        "13px",
+
+      color:
+        "#303530",
+
+      background:
+        "#ffffff",
+
+      outline:
+        "none",
+
+      boxSizing:
+        "border-box"
+
+    }
+  );
+
+
+  const sendButton =
+    document.createElement(
+      "button"
+    );
+
+
+  sendButton.type =
+    "button";
+
+
+  sendButton.setAttribute(
+    "aria-label",
+    "Send message"
+  );
+
+
+  sendButton.textContent =
+    "➤";
+
+
+  Object.assign(
+    sendButton.style,
+    {
+
+      width:
+        "44px",
+
+      height:
+        "44px",
+
+      border:
+        "0",
+
+      borderRadius:
+        "50%",
+
+      background:
+        "#176b3a",
+
+      color:
+        "#ffffff",
+
+      fontSize:
+        "18px",
+
+      cursor:
+        "pointer",
+
+      flexShrink:
+        "0",
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center"
+
+    }
+  );
+
+
+  inputArea.appendChild(
+    input
+  );
+
+
+  inputArea.appendChild(
+    sendButton
+  );
+
+
+  /* =========================================================
      FOOTER
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  const footer = document.createElement("div");
+  const footer =
+    document.createElement(
+      "div"
+    );
+
 
   footer.textContent =
-    "🌿 Na’Vi is here to guide you, not replace your decisions.";
+    "Na’Vi helps you navigate your learning journey.";
 
-  Object.assign(footer.style, {
-    fontSize: "10px",
-    color: "#777777",
-    textAlign: "center",
-    padding: "7px 10px",
-    background: "#ffffff",
-    flexShrink: "0"
-  });
 
-  /* ---------------------------------------------------------
+  Object.assign(
+    footer.style,
+    {
+
+      padding:
+        "7px 12px",
+
+      background:
+        "#ffffff",
+
+      color:
+        "#777d77",
+
+      fontSize:
+        "10px",
+
+      textAlign:
+        "center",
+
+      lineHeight:
+        "1.3",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  /* =========================================================
      ASSEMBLE CHAT
-     --------------------------------------------------------- */
+     ========================================================= */
 
-  chat.appendChild(header);
-  chat.appendChild(body);
-  chat.appendChild(inputArea);
-  chat.appendChild(footer);
+  chat.appendChild(
+    header
+  );
 
-  /* ---------------------------------------------------------
-     MAIN NA'VI IMAGE
-     --------------------------------------------------------- */
 
-  const naviButton = document.createElement("button");
+  chat.appendChild(
+    body
+  );
 
-  naviButton.type = "button";
-  naviButton.setAttribute("aria-label", "Open Na’Vi chat");
 
-  Object.assign(naviButton.style, {
-    display: "block",
-    marginLeft: "auto",
-    padding: "0",
-    border: "none",
-    background: "transparent",
-    cursor: "pointer"
-  });
+  chat.appendChild(
+    inputArea
+  );
 
-  const mainNavi = document.createElement("img");
 
-  mainNavi.src = NAVI_IMAGE;
-  mainNavi.alt = "Na’Vi — CONTROL Companion";
+  chat.appendChild(
+    footer
+  );
 
-  Object.assign(mainNavi.style, {
-    width: "120px",
-    height: "auto",
-    display: "block"
-  });
 
-  naviButton.appendChild(mainNavi);
-
-  /* ---------------------------------------------------------
-     OPEN CHAT
-     --------------------------------------------------------- */
+  /* =========================================================
+     CHAT OPEN / CLOSE
+     ========================================================= */
 
   function openChat() {
 
-    chat.style.display = "flex";
+    if (chatOpen) {
+      return;
+    }
+
+
+    chatOpen =
+      true;
+
+
+    chat.style.display =
+      "flex";
+
 
     input.focus();
 
   }
 
-  /* ---------------------------------------------------------
-     CLOSE CHAT
-     --------------------------------------------------------- */
 
   function closeChat() {
 
-    chat.style.display = "none";
-
-  }
-
-  naviButton.addEventListener("click", openChat);
-
-  closeButton.addEventListener("click", closeChat);
-
-  /* ---------------------------------------------------------
-     ADD STUDENT MESSAGE
-     --------------------------------------------------------- */
-
-  function addStudentMessage(text) {
-
-    const message = document.createElement("div");
-
-    message.textContent = text;
-
-    Object.assign(message.style, {
-      marginLeft: "48px",
-      marginBottom: "12px",
-      background: "#eef5ea",
-      borderRadius: "14px",
-      padding: "10px 12px",
-      fontSize: "13px",
-      lineHeight: "1.5",
-      color: "#333333"
-    });
-
-    body.insertBefore(message, contextInfo);
-
-    body.scrollTop = body.scrollHeight;
-
-  }
-
-  /* ---------------------------------------------------------
-     SEND TEST MESSAGE
-     --------------------------------------------------------- */
-
-  function sendMessage() {
-
-    const text = input.value.trim();
-
-    if (!text) {
+    if (!chatOpen) {
       return;
     }
 
-    addStudentMessage(text);
 
-    input.value = "";
+    chatOpen =
+      false;
 
-    /*
-      AI CONNECTION WILL GO HERE LATER.
 
-      For now this only displays the student's
-      message so we can test the interface.
-    */
+    chat.style.display =
+      "none";
 
   }
 
-  sendButton.addEventListener("click", sendMessage);
 
-  input.addEventListener("keydown", function (event) {
+  function toggleChat() {
 
-    if (event.key === "Enter") {
+    if (chatOpen) {
 
-      event.preventDefault();
+      closeChat();
 
-      sendMessage();
+    } else {
+
+      openChat();
 
     }
 
-  });
+  }
 
-  /* ---------------------------------------------------------
-     ADD WIDGET TO SYSTEME.IO PAGE
-     --------------------------------------------------------- */
 
-  wrapper.appendChild(chat);
-  wrapper.appendChild(naviButton);
+  /* =========================================================
+     NA'VI CLICK / DRAG SYSTEM
+     
+     QUICK CLICK:
+       Toggle chat.
+     
+     DRAG:
+       Move Na'Vi.
+     
+     Works with mouse and touch through Pointer Events.
+     ========================================================= */
 
-  container.appendChild(wrapper);
+  let pointerActive =
+    false;
+
+  let pointerMoved =
+    false;
+
+  let pointerStartX =
+    0;
+
+  let pointerStartY =
+    0;
+
+  let originalLeft =
+    0;
+
+  let originalTop =
+    0;
+
+  let dragOffsetX =
+    0;
+
+  let dragOffsetY =
+    0;
+
+
+  function getStoredPosition() {
+
+    try {
+
+      const stored =
+        localStorage.getItem(
+          CONFIG.positionStorageKey
+        );
+
+
+      if (!stored) {
+        return null;
+      }
+
+
+      const position =
+        JSON.parse(
+          stored
+        );
+
+
+      if (
+        typeof position.left !==
+          "number" ||
+        typeof position.top !==
+          "number"
+      ) {
+
+        return null;
+
+      }
+
+
+      return position;
+
+    } catch (error) {
+
+      return null;
+
+    }
+
+  }
+
+
+  function savePosition(
+    left,
+    top
+  ) {
+
+    try {
+
+      localStorage.setItem(
+
+        CONFIG.positionStorageKey,
+
+        JSON.stringify({
+
+          left:
+            left,
+
+          top:
+            top
+
+        })
+
+      );
+
+    } catch (error) {
+
+      /* Storage may be unavailable. */
+    }
+
+  }
+
+
+  function clamp(
+    value,
+    min,
+    max
+  ) {
+
+    return Math.min(
+      Math.max(
+        value,
+        min
+      ),
+      max
+    );
+
+  }
+
+
+  function applyStoredPosition() {
+
+    const stored =
+      getStoredPosition();
+
+
+    if (!stored) {
+      return;
+    }
+
+
+    const rect =
+      naviButton.getBoundingClientRect();
+
+
+    const maxLeft =
+      Math.max(
+        0,
+        window.innerWidth -
+        rect.width
+      );
+
+
+    const maxTop =
+      Math.max(
+        0,
+        window.innerHeight -
+        rect.height
+      );
+
+
+    const left =
+      clamp(
+        stored.left,
+        0,
+        maxLeft
+      );
+
+
+    const top =
+      clamp(
+        stored.top,
+        0,
+        maxTop
+      );
+
+
+    /* Move Na'Vi into viewport positioning mode. */
+
+    wrapper.style.position =
+      "fixed";
+
+
+    wrapper.style.left =
+      left + "px";
+
+
+    wrapper.style.top =
+      top + "px";
+
+
+    wrapper.style.width =
+      "auto";
+
+
+    wrapper.style.maxWidth =
+      "none";
+
+
+    wrapper.style.zIndex =
+      "2147482000";
+
+  }
+
+
+  function beginPointerDrag(
+    event
+  ) {
+
+    pointerActive =
+      true;
+
+
+    pointerMoved =
+      false;
+
+
+    pointerStartX =
+      event.clientX;
+
+
+    pointerStartY =
+      event.clientY;
+
+
+    const rect =
+      naviButton.getBoundingClientRect();
+
+
+    originalLeft =
+      rect.left;
+
+
+    originalTop =
+      rect.top;
+
+
+    dragOffsetX =
+      event.clientX -
+      rect.left;
+
+
+    dragOffsetY =
+      event.clientY -
+      rect.top;
+
+
+    naviButton.style.cursor =
+      "grabbing";
+
+
+    if (
+      naviButton.setPointerCapture
+    ) {
+
+      try {
+
+        naviButton.setPointerCapture(
+          event.pointerId
+        );
+
+      } catch (error) {
+        /* Pointer capture unavailable. */
+      }
+
+    }
+
+
+    event.preventDefault();
+
+  }
+
+
+  function movePointerDrag(
+    event
+  ) {
+
+    if (!pointerActive) {
+      return;
+    }
+
+
+    const distanceX =
+      Math.abs(
+        event.clientX -
+        pointerStartX
+      );
+
+
+    const distanceY =
+      Math.abs(
+        event.clientY -
+        pointerStartY
+      );
+
+
+    if (
+      distanceX >
+        CONFIG.dragThreshold ||
+      distanceY >
+        CONFIG.dragThreshold
+    ) {
+
+      pointerMoved =
+        true;
+
+    }
+
+
+    if (!pointerMoved) {
+      return;
+    }
+
+
+    /*
+
+       Once dragging begins, switch the wrapper to fixed
+       viewport positioning.
+
+       This allows Na'Vi to move anywhere on screen.
+    */
+
+    wrapper.style.position =
+      "fixed";
+
+
+    wrapper.style.width =
+      "auto";
+
+
+    wrapper.style.maxWidth =
+      "none";
+
+
+    wrapper.style.zIndex =
+      "2147482000";
+
+
+    const rect =
+      naviButton.getBoundingClientRect();
+
+
+    const maxLeft =
+      Math.max(
+        0,
+        window.innerWidth -
+        rect.width
+      );
+
+
+    const maxTop =
+      Math.max(
+        0,
+        window.innerHeight -
+        rect.height
+      );
+
+
+    const newLeft =
+      clamp(
+        event.clientX -
+          dragOffsetX,
+        0,
+        maxLeft
+      );
+
+
+    const newTop =
+      clamp(
+        event.clientY -
+          dragOffsetY,
+        0,
+        maxTop
+      );
+
+
+    wrapper.style.left =
+      newLeft + "px";
+
+
+    wrapper.style.top =
+      newTop + "px";
+
+
+    event.preventDefault();
+
+  }
+
+
+  function endPointerDrag(
+    event
+  ) {
+
+    if (!pointerActive) {
+      return;
+    }
+
+
+    pointerActive =
+      false;
+
+
+    naviButton.style.cursor =
+      "grab";
+
+
+    if (
+      naviButton.releasePointerCapture
+    ) {
+
+      try {
+
+        naviButton.releasePointerCapture(
+          event.pointerId
+        );
+
+      } catch (error) {
+        /* Pointer capture unavailable. */
+      }
+
+    }
+
+
+    if (pointerMoved) {
+
+      const rect =
+        naviButton.getBoundingClientRect();
+
+
+      savePosition(
+        rect.left,
+        rect.top
+      );
+
+
+      /*
+         Prevent the drag release from also triggering
+         a normal click.
+      */
+
+      setTimeout(
+        function () {
+
+          pointerMoved =
+            false;
+
+        },
+        0
+      );
+
+
+      return;
+
+    }
+
+
+    toggleChat();
+
+  }
+
+
+  naviButton.addEventListener(
+    "pointerdown",
+    beginPointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointermove",
+    movePointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointerup",
+    endPointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointercancel",
+    function (event) {
+
+      pointerActive =
+        false;
+
+      pointerMoved =
+        false;
+
+      naviButton.style.cursor =
+        "grab";
+
+    }
+  );
+
+
+  /* =========================================================
+     CLOSE BUTTON
+     ========================================================= */
+
+  closeButton.addEventListener(
+    "click",
+    function () {
+
+      closeChat();
+
+    }
+  );
+
+
+  /* =========================================================
+     LEARNER MESSAGE
+     ========================================================= */
+
+  function addLearnerMessage(
+    text
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    Object.assign(
+      row.style,
+      {
+
+        display:
+          "flex",
+
+        justifyContent:
+          "flex-end",
+
+        marginBottom:
+          "12px",
+
+        paddingLeft:
+          "45px"
+
+      }
+    );
+
+
+    const bubble =
+      document.createElement(
+        "div"
+      );
+
+
+    bubble.textContent =
+      text;
+
+
+    Object.assign(
+      bubble.style,
+      {
+
+        background:
+          "#eef5ea",
+
+        border:
+          "1px solid #dce8d8",
+
+        borderRadius:
+          "15px",
+
+        padding:
+          "10px 13px",
+
+        fontSize:
+          "13px",
+
+        lineHeight:
+          "1.5",
+
+        color:
+          "#303530",
+
+        maxWidth:
+          "85%"
+
+      }
+    );
+
+
+    row.appendChild(
+      bubble
+    );
+
+
+    messages.appendChild(
+      row
+    );
+
+
+    body.scrollTop =
+      body.scrollHeight;
+
+  }
+
+
+  /* =========================================================
+     NA'VI MESSAGE
+     ========================================================= */
+
+  function addNaviMessage(
+    text
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    Object.assign(
+      row.style,
+      {
+
+        display:
+          "flex",
+
+        alignItems:
+          "flex-start",
+
+        gap:
+          "9px",
+
+        marginBottom:
+          "13px"
+
+      }
+    );
+
+
+    const avatar =
+      document.createElement(
+        "img"
+      );
+
+
+    avatar.src =
+      NAVI_STATES[
+        activeState
+      ].image ||
+      CONFIG.defaultImage;
+
+
+    avatar.alt =
+      "";
+
+
+    Object.assign(
+      avatar.style,
+      {
+
+        width:
+          "38px",
+
+        height:
+          "38px",
+
+        objectFit:
+          "contain",
+
+        flexShrink:
+          "0"
+
+      }
+    );
+
+
+    const bubble =
+      document.createElement(
+        "div"
+      );
+
+
+    bubble.textContent =
+      text;
+
+
+    Object.assign(
+      bubble.style,
+      {
+
+        background:
+          "#ffffff",
+
+        border:
+          "1px solid #e5eae3",
+
+        borderRadius:
+          "15px",
+
+        padding:
+          "10px 13px",
+
+        fontSize:
+          "13px",
+
+        lineHeight:
+          "1.5",
+
+        color:
+          "#303530",
+
+        maxWidth:
+          "85%",
+
+        boxShadow:
+          "0 2px 7px rgba(0,0,0,0.04)"
+
+      }
+    );
+
+
+    row.appendChild(
+      avatar
+    );
+
+
+    row.appendChild(
+      bubble
+    );
+
+
+    messages.appendChild(
+      row
+    );
+
+
+    body.scrollTop =
+      body.scrollHeight;
+
+  }
+
+
+  /* =========================================================
+     BUILD BACKEND PAYLOAD
+     ========================================================= */
+
+  function buildMessagePayload(
+    text
+  ) {
+
+    return {
+
+      message:
+        text,
+
+      sessionId:
+        sessionId,
+
+      page:
+        page,
+
+      context:
+        context,
+
+      activeState:
+        activeState,
+
+      companion:
+        "Na’Vi",
+
+      framework:
+        "CONTROL Framework"
+
+    };
+
+  }
+
+
+  /* =========================================================
+     SEND MESSAGE
+     
+     No fake AI response is generated.
+     
+     When the secure backend is connected, the response
+     will be displayed here.
+     ========================================================= */
+
+  async function submitUserMessage(
+    text
+  ) {
+
+    const cleanText =
+      String(
+        text || ""
+      ).trim();
+
+
+    if (!cleanText) {
+      return;
+    }
+
+
+    addLearnerMessage(
+      cleanText
+    );
+
+
+    input.value =
+      "";
+
+
+    if (!CONFIG.apiEndpoint) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const payload =
+        buildMessagePayload(
+          cleanText
+        );
+
+
+      const response =
+        await fetch(
+          CONFIG.apiEndpoint,
+          {
+
+            method:
+              "POST",
+
+            headers:
+              {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+            body:
+              JSON.stringify(
+                payload
+              )
+
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Na’Vi service unavailable."
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      if (
+        data &&
+        data.reply
+      ) {
+
+        addNaviMessage(
+          data.reply
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Na’Vi connection error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SEND BUTTON
+     ========================================================= */
+
+  sendButton.addEventListener(
+    "click",
+    function () {
+
+      submitUserMessage(
+        input.value
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     ENTER KEY
+     ========================================================= */
+
+  input.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        submitUserMessage(
+          input.value
+        );
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     NA'VI STATE CONTROL
+     
+     Ready for the eight image URLs.
+     ========================================================= */
+
+  window.NaVi = {
+
+    setState:
+      function (stateName) {
+
+        if (
+          !NAVI_STATES[
+            stateName
+          ]
+        ) {
+
+          return false;
+
+        }
+
+
+        activeState =
+          stateName;
+
+
+        const image =
+          NAVI_STATES[
+            stateName
+          ].image;
+
+
+        if (!image) {
+
+          return false;
+
+        }
+
+
+        mainNavi.src =
+          image;
+
+
+        headerNavi.src =
+          image;
+
+
+        welcomeNavi.src =
+          image;
+
+
+        return true;
+
+      },
+
+
+    getState:
+      function () {
+
+        return activeState;
+
+      },
+
+
+    getContext:
+      function () {
+
+        return {
+
+          page:
+            page,
+
+          context:
+            context,
+
+          sessionId:
+            sessionId
+
+        };
+
+      }
+
+  };
+
+
+  /* =========================================================
+     ADD NA'VI TO SYSTEME.IO
+     
+     Initial placement:
+       Exactly where the #navi-companion block exists.
+     
+     The chat is attached to the document body:
+       Bottom-right of the browser.
+     ========================================================= */
+
+  wrapper.appendChild(
+    naviButton
+  );
+
+
+  container.appendChild(
+    wrapper
+  );
+
+
+  document.body.appendChild(
+    chat
+  );
+
+
+  /* =========================================================
+     RESTORE PREVIOUS NA'VI POSITION
+     
+     If the learner has previously moved Na'Vi, restore
+     her position.
+     
+     Otherwise she remains exactly where Maria placed the
+     #navi-companion block.
+     ========================================================= */
+
+  requestAnimationFrame(
+    function () {
+
+      applyStoredPosition();
+
+    }
+  );
+
+
+  /* =========================================================
+     KEEP DRAGGED NA'VI INSIDE THE VIEWPORT
+     ========================================================= */
+
+  window.addEventListener(
+    "resize",
+    function () {
+
+      const stored =
+        getStoredPosition();
+
+
+      if (!stored) {
+        return;
+      }
+
+
+      const rect =
+        naviButton.getBoundingClientRect();
+
+
+      const maxLeft =
+        Math.max(
+          0,
+          window.innerWidth -
+          rect.width
+        );
+
+
+      const maxTop =
+        Math.max(
+          0,
+          window.innerHeight -
+          rect.height
+        );
+
+
+      const left =
+        clamp(
+          rect.left,
+          0,
+          maxLeft
+        );
+
+
+      const top =
+        clamp(
+          rect.top,
+          0,
+          maxTop
+        );
+
+
+      wrapper.style.left =
+        left + "px";
+
+
+      wrapper.style.top =
+        top + "px";
+
+
+      savePosition(
+        left,
+        top
+      );
+
+    }
+  );
 
 })();
