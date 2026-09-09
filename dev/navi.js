@@ -9,31 +9,28 @@
   const CONFIG = {
 
     /* -------------------------------------------------------
-       CONFIRMED FRIENDLY WAVE IMAGE
+       NA'VI IMAGE STATES
        ------------------------------------------------------- */
 
     defaultImage:
-      "https://d1yei2z3i6k35z.cloudfront.net/10602272/6a9802a28dcee0.81540527_Na-vi.gif",
-
+      "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa12c0a38e7b5.84659750_Na-vi1.gif",
 
     /* -------------------------------------------------------
        SECURE BACKEND
        
-       This remains empty until the secure Na'Vi backend
-       is connected.
-       
+       The OpenAI/Cloudflare endpoint will be added here
+       after the CONTROL Knowledge Base is finalized.
+
        NEVER place an OpenAI API key in this file.
        ------------------------------------------------------- */
 
     apiEndpoint: "",
-
 
     /* -------------------------------------------------------
        NA'VI SIZE
        ------------------------------------------------------- */
 
     characterWidth: 120,
-
 
     /* -------------------------------------------------------
        CHAT SIZE
@@ -42,14 +39,12 @@
     chatWidth: 380,
     chatHeight: 560,
 
-
     /* -------------------------------------------------------
        CHAT POSITION
        ------------------------------------------------------- */
 
     chatRight: 20,
     chatBottom: 20,
-
 
     /* -------------------------------------------------------
        DRAG SETTINGS
@@ -69,6 +64,11 @@
 
   const NAVI_STATES = {
 
+    /* -------------------------------------------------------
+       1. FRIENDLY WAVE
+       Welcome & Greeting
+       ------------------------------------------------------- */
+
     friendlyWave: {
 
       name:
@@ -78,10 +78,15 @@
         "Welcome & Greeting",
 
       image:
-        CONFIG.defaultImage
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa12c0a38e7b5.84659750_Na-vi1.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       2. CONFIDENT GUIDE
+       Decision & Direction
+       ------------------------------------------------------- */
 
     confidentGuide: {
 
@@ -92,10 +97,15 @@
         "Decision & Direction",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa164a5135007.56245562_Na-vi1.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       3. ENCOURAGING SUPPORT
+       Motivation & Reassurance
+       ------------------------------------------------------- */
 
     encouragingSupport: {
 
@@ -106,10 +116,15 @@
         "Motivation & Reassurance",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa169c82f6dd2.91566060_EncouragingSupport.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       4. OPEN ARMS
+       Welcome Back & Recovery
+       ------------------------------------------------------- */
 
     openArms: {
 
@@ -120,10 +135,15 @@
         "Welcome Back & Recovery",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16bb477d746.37099213_OpenArms.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       5. ON THE MOVE
+       Action & Implementation
+       ------------------------------------------------------- */
 
     onTheMove: {
 
@@ -134,10 +154,15 @@
         "Action & Implementation",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16d235ec1f1.88850289_OntheMove.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       6. THOUGHTFUL REFLECTION
+       Reflection & Insight
+       ------------------------------------------------------- */
 
     thoughtfulReflection: {
 
@@ -148,10 +173,15 @@
         "Reflection & Insight",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa173788b4db9.21365458_ThoughtfulReflection.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       7. INSIGHT GUIDE
+       Teaching & Clarifying
+       ------------------------------------------------------- */
 
     insightGuide: {
 
@@ -162,10 +192,15 @@
         "Teaching & Clarifying",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa1706f52e8b7.18925687_INSIGHTGUIDE.gif"
 
     },
 
+
+    /* -------------------------------------------------------
+       8. CALM PRESENCE
+       Emotional Support & Calm
+       ------------------------------------------------------- */
 
     calmPresence: {
 
@@ -176,7 +211,7 @@
         "Emotional Support & Calm",
 
       image:
-        ""
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa17048a20018.95863785_CALMPRESENCE.gif"
 
     }
 
@@ -200,7 +235,7 @@
 
   /* =========================================================
      PAGE CONTEXT
-     
+
      Used internally by the future AI/backend.
      Not displayed to the learner.
      ========================================================= */
@@ -266,11 +301,11 @@
 
   /* =========================================================
      CREATE NA'VI PAGE WRAPPER
-     
+
      The wrapper remains in the normal page flow.
-     
-     This means Na'Vi initially appears exactly where
-     the Systeme.io HTML block has been placed.
+
+     Na'Vi initially appears exactly where the
+     Systeme.io HTML block has been placed.
      ========================================================= */
 
   const wrapper =
@@ -405,8 +440,7 @@
   mainNavi.src =
     NAVI_STATES[
       activeState
-    ].image ||
-    CONFIG.defaultImage;
+    ].image;
 
 
   mainNavi.alt =
@@ -462,11 +496,9 @@
 
   /* =========================================================
      CHAT WINDOW
-     
-     IMPORTANT:
-     
+
      The chat is fixed to the browser viewport.
-     
+
      It is independent from Na'Vi's position.
      ========================================================= */
 
@@ -620,8 +652,7 @@
   headerNavi.src =
     NAVI_STATES[
       activeState
-    ].image ||
-    CONFIG.defaultImage;
+    ].image;
 
 
   headerNavi.alt =
@@ -884,8 +915,7 @@
   welcomeNavi.src =
     NAVI_STATES[
       activeState
-    ].image ||
-    CONFIG.defaultImage;
+    ].image;
 
 
   welcomeNavi.alt =
@@ -1520,13 +1550,13 @@
 
   /* =========================================================
      NA'VI CLICK / DRAG SYSTEM
-     
+
      QUICK CLICK:
        Toggle chat.
-     
+
      DRAG:
        Move Na'Vi.
-     
+
      Works with mouse and touch through Pointer Events.
      ========================================================= */
 
@@ -1625,6 +1655,7 @@
     } catch (error) {
 
       /* Storage may be unavailable. */
+
     }
 
   }
@@ -1693,8 +1724,6 @@
         maxTop
       );
 
-
-    /* Move Na'Vi into viewport positioning mode. */
 
     wrapper.style.position =
       "fixed";
@@ -1779,7 +1808,9 @@
         );
 
       } catch (error) {
+
         /* Pointer capture unavailable. */
+
       }
 
     }
@@ -1837,6 +1868,7 @@
        viewport positioning.
 
        This allows Na'Vi to move anywhere on screen.
+
     */
 
     wrapper.style.position =
@@ -1934,7 +1966,9 @@
         );
 
       } catch (error) {
+
         /* Pointer capture unavailable. */
+
       }
 
     }
@@ -1998,7 +2032,7 @@
 
   naviButton.addEventListener(
     "pointercancel",
-    function (event) {
+    function () {
 
       pointerActive =
         false;
@@ -2162,8 +2196,7 @@
     avatar.src =
       NAVI_STATES[
         activeState
-      ].image ||
-      CONFIG.defaultImage;
+      ].image;
 
 
     avatar.alt =
@@ -2294,11 +2327,9 @@
 
   /* =========================================================
      SEND MESSAGE
-     
-     No fake AI response is generated.
-     
-     When the secure backend is connected, the response
-     will be displayed here.
+
+     The backend connection will be activated when
+     CONFIG.apiEndpoint is populated.
      ========================================================= */
 
   async function submitUserMessage(
@@ -2326,9 +2357,7 @@
 
 
     if (!CONFIG.apiEndpoint) {
-
       return;
-
     }
 
 
@@ -2350,10 +2379,8 @@
 
             headers:
               {
-
                 "Content-Type":
                   "application/json"
-
               },
 
             body:
@@ -2444,8 +2471,6 @@
 
   /* =========================================================
      NA'VI STATE CONTROL
-     
-     Ready for the eight image URLs.
      ========================================================= */
 
   window.NaVi = {
@@ -2529,10 +2554,10 @@
 
   /* =========================================================
      ADD NA'VI TO SYSTEME.IO
-     
+
      Initial placement:
        Exactly where the #navi-companion block exists.
-     
+
      The chat is attached to the document body:
        Bottom-right of the browser.
      ========================================================= */
@@ -2554,12 +2579,12 @@
 
   /* =========================================================
      RESTORE PREVIOUS NA'VI POSITION
-     
+
      If the learner has previously moved Na'Vi, restore
      her position.
-     
-     Otherwise she remains exactly where Maria placed the
-     #navi-companion block.
+
+     Otherwise she remains exactly where the
+     #navi-companion block has been placed.
      ========================================================= */
 
   requestAnimationFrame(
