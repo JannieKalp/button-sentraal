@@ -24,7 +24,8 @@
        NEVER place an OpenAI API key in this file.
        ------------------------------------------------------- */
 
-    apiEndpoint: "",
+    apiEndpoint:
+      "https://navi-brain.clarityframework01.workers.dev",
 
     /* -------------------------------------------------------
        NA'VI SIZE
