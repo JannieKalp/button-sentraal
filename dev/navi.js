@@ -289,7 +289,7 @@
      ========================================================= */
 
   let activeState =
-    "friendlyWave";
+    "calmPresence";
 
 
   /* =========================================================
@@ -2158,7 +2158,153 @@
      NA'VI MESSAGE
      ========================================================= */
 
-  function addNaviMessage(
+    function renderNaviMessage(
+    text
+  ) {
+
+    const fragment =
+      document.createDocumentFragment();
+
+    const normalized =
+      String(text || "")
+        .replace(/\s+(?=\d+\.\s)/g, "\n");
+
+    const lines =
+      normalized.split(/\r?\n/);
+
+    let list = null;
+
+    lines.forEach(
+      function (line) {
+
+        const trimmed =
+          line.trim();
+
+        if (!trimmed) {
+          list = null;
+          return;
+        }
+
+        const match =
+          trimmed.match(/^(\d+)\.\s+(.*)$/);
+
+        if (match) {
+
+          if (!list) {
+
+            list =
+              document.createElement(
+                "ol"
+              );
+
+            list.style.margin =
+              "6px 0 0 20px";
+
+            list.style.padding =
+              "0";
+
+            fragment.appendChild(
+              list
+            );
+
+          }
+
+          const item =
+            document.createElement(
+              "li"
+            );
+
+          item.style.marginBottom =
+            "5px";
+
+          appendNaviInlineMarkdown(
+            item,
+            match[2]
+          );
+
+          list.appendChild(
+            item
+          );
+
+          return;
+        }
+
+        list = null;
+
+        const paragraph =
+          document.createElement(
+            "div"
+          );
+
+        paragraph.style.marginBottom =
+          "6px";
+
+        appendNaviInlineMarkdown(
+          paragraph,
+          trimmed
+        );
+
+        fragment.appendChild(
+          paragraph
+        );
+
+      }
+    );
+
+    return fragment;
+
+  }
+
+
+  function appendNaviInlineMarkdown(
+    element,
+    text
+  ) {
+
+    const parts =
+      String(text || "").split(
+        /(\*\*[^*]+\*\*)/g
+      );
+
+    parts.forEach(
+      function (part) {
+
+        if (
+          part.startsWith("**") &&
+          part.endsWith("**")
+        ) {
+
+          const bold =
+            document.createElement(
+              "strong"
+            );
+
+          bold.textContent =
+            part.slice(
+              2,
+              -2
+            );
+
+          element.appendChild(
+            bold
+          );
+
+        } else {
+
+          element.appendChild(
+            document.createTextNode(
+              part
+            )
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+function addNaviMessage(
     text
   ) {
 
@@ -2230,8 +2376,11 @@
       );
 
 
-    bubble.textContent =
-      text;
+        bubble.appendChild(
+      renderNaviMessage(
+        text
+      )
+    );
 
 
     Object.assign(
