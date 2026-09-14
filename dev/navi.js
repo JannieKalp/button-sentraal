@@ -2552,19 +2552,22 @@ function addNaviMessage(
 
 
       const data =
-        await response.json();
+  await response.json();
 
+if (
+  data &&
+  data.reply
+) {
 
-      if (
-        data &&
-        data.reply
-      ) {
+  if (data.state) {
+    window.NaVi.setState(data.state);
+  }
 
-        addNaviMessage(
-          data.reply
-        );
+  addNaviMessage(
+    data.reply
+  );
 
-      }
+}
 
     } catch (error) {
 
