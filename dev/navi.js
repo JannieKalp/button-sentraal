@@ -2256,53 +2256,122 @@
   }
 
 
-  function appendNaviInlineMarkdown(
-    element,
-    text
-  ) {
+function appendNaviInlineMarkdown(
+  element,
+  text
+) {
 
-    const parts =
-      String(text || "").split(
-        /(\*\*[^*]+\*\*)/g
-      );
-
-    parts.forEach(
-      function (part) {
-
-        if (
-          part.startsWith("**") &&
-          part.endsWith("**")
-        ) {
-
-          const bold =
-            document.createElement(
-              "strong"
-            );
-
-          bold.textContent =
-            part.slice(
-              2,
-              -2
-            );
-
-          element.appendChild(
-            bold
-          );
-
-        } else {
-
-          element.appendChild(
-            document.createTextNode(
-              part
-            )
-          );
-
-        }
-
-      }
+  const parts =
+    String(text || "").split(
+      /(\[[^\]]+\]\(https:\/\/www\.godigicraft\.com\/[^)\s]+\)|\*\*[^*]+\*\*)/g
     );
 
-  }
+  parts.forEach(
+    function (part) {
+
+      /* -------------------------------------------------------
+         VERIFIED MARKDOWN LINK
+         ------------------------------------------------------- */
+
+      const linkMatch =
+        part.match(
+          /^\[([^\]]+)\]\((https:\/\/www\.godigicraft\.com\/[^)\s]+)\)$/
+        );
+
+      if (linkMatch) {
+
+        const linkText =
+          linkMatch[1];
+
+        const linkUrl =
+          linkMatch[2];
+
+        const link =
+          document.createElement(
+            "a"
+          );
+
+        link.textContent =
+          linkText;
+
+        link.href =
+          linkUrl;
+
+        link.target =
+          "_blank";
+
+        link.rel =
+          "noopener noreferrer";
+
+        Object.assign(
+          link.style,
+          {
+
+            color:
+              "#176b3a",
+
+            fontWeight:
+              "600",
+
+            textDecoration:
+              "underline",
+
+            cursor:
+              "pointer"
+
+          }
+        );
+
+        element.appendChild(
+          link
+        );
+
+        return;
+      }
+
+
+      /* -------------------------------------------------------
+         BOLD TEXT
+         ------------------------------------------------------- */
+
+      if (
+        part.startsWith("**") &&
+        part.endsWith("**")
+      ) {
+
+        const bold =
+          document.createElement(
+            "strong"
+          );
+
+        bold.textContent =
+          part.slice(
+            2,
+            -2
+          );
+
+        element.appendChild(
+          bold
+        );
+
+        return;
+      }
+
+
+      /* -------------------------------------------------------
+         NORMAL TEXT
+         ------------------------------------------------------- */
+
+      element.appendChild(
+        document.createTextNode(
+          part
+        )
+      );
+
+    }
+  );
+
+}
 
 function addNaviMessage(
     text
