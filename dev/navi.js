@@ -3,10 +3,76 @@
 
   /* =========================================================
      NA'VI — CONTROL COMPANION
-     Production Companion
+     Frontend / Nervous System
+     Version 1.0
+
+     ARCHITECTURE
+
+     Subconscious
+       = what Na'Vi knows
+
+     Brain
+       = how Na'Vi thinks, interprets, retrieves and decides
+
+     Nervous System
+       = how Brain instructions and signals are carried
+
+     Frontend
+       = how the learner experiences Na'Vi
+
+     Backend / Runtime
+       = how the system is technically executed
+
+     THIS FILE
+
+     This file is the Na'Vi Frontend / Nervous System.
+
+     It is responsible for:
+       - presenting Na'Vi
+       - receiving learner interaction
+       - receiving page/context signals
+       - maintaining the interface session
+       - carrying signals to the Brain
+       - receiving Brain instructions
+       - presenting Brain responses
+       - applying approved visual states
+       - carrying verified navigation instructions
+
+     It does NOT:
+       - make CONTROL teaching decisions
+       - score assessments
+       - retrieve knowledge
+       - invent course content
+       - invent URLs
+       - determine learner progress
+       - access private Notion information
+       - replace the Brain
+
+     ========================================================= */
+
+
+  /* =========================================================
+     FRONTEND / NERVOUS SYSTEM CONFIGURATION
      ========================================================= */
 
   const CONFIG = {
+
+    /* -------------------------------------------------------
+       VERSION / ARCHITECTURE
+       ------------------------------------------------------- */
+
+    version:
+      "1.0",
+
+    layer:
+      "Frontend / Nervous System",
+
+    protocol:
+      "navi-brain-signal",
+
+    protocolVersion:
+      "1.0",
+
 
     /* -------------------------------------------------------
        NA'VI IMAGE STATES
@@ -15,11 +81,15 @@
     defaultImage:
       "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa12c0a38e7b5.84659750_Na-vi1.gif",
 
+
     /* -------------------------------------------------------
-       SECURE BACKEND
-       
-       The OpenAI/Cloudflare endpoint will be added here
-       after the CONTROL Knowledge Base is finalized.
+       SECURE BRAIN ENDPOINT
+
+       The Frontend / Nervous System sends signals to the
+       Na'Vi Brain through this endpoint.
+
+       The Brain is responsible for cognition, routing,
+       retrieval and decision-making.
 
        NEVER place an OpenAI API key in this file.
        ------------------------------------------------------- */
@@ -27,31 +97,48 @@
     apiEndpoint:
       "https://navi-brain.clarityframework01.workers.dev",
 
+
     /* -------------------------------------------------------
        NA'VI SIZE
        ------------------------------------------------------- */
 
-    characterWidth: 120,
+    characterWidth:
+      120,
+
 
     /* -------------------------------------------------------
        CHAT SIZE
        ------------------------------------------------------- */
 
-    chatWidth: 380,
-    chatHeight: 560,
+    chatWidth:
+      380,
+
+    chatHeight:
+      560,
+
 
     /* -------------------------------------------------------
        CHAT POSITION
        ------------------------------------------------------- */
 
-    chatRight: 20,
-    chatBottom: 20,
+    chatRight:
+      20,
+
+    chatBottom:
+      20,
+
 
     /* -------------------------------------------------------
        DRAG SETTINGS
        ------------------------------------------------------- */
 
-    dragThreshold: 6,
+    dragThreshold:
+      6,
+
+
+    /* -------------------------------------------------------
+       POSITION STORAGE
+       ------------------------------------------------------- */
 
     positionStorageKey:
       "navi_companion_position"
@@ -60,13 +147,28 @@
 
 
   /* =========================================================
-     NA'VI STATES
+     NA'VI VISUAL STATES
+
+     These are presentation states.
+
+     They do not change:
+       - Na'Vi's identity
+       - source authority
+       - safety boundaries
+       - learner ownership
+       - Brain reasoning
+       - knowledge
+
+     The Brain may request a state.
+     The Frontend only presents it.
      ========================================================= */
 
   const NAVI_STATES = {
 
+
     /* -------------------------------------------------------
        1. FRIENDLY WAVE
+
        Welcome & Greeting
        ------------------------------------------------------- */
 
@@ -86,6 +188,7 @@
 
     /* -------------------------------------------------------
        2. CONFIDENT GUIDE
+
        Decision & Direction
        ------------------------------------------------------- */
 
@@ -105,6 +208,7 @@
 
     /* -------------------------------------------------------
        3. ENCOURAGING SUPPORT
+
        Motivation & Reassurance
        ------------------------------------------------------- */
 
@@ -124,6 +228,7 @@
 
     /* -------------------------------------------------------
        4. OPEN ARMS
+
        Welcome Back & Recovery
        ------------------------------------------------------- */
 
@@ -143,6 +248,7 @@
 
     /* -------------------------------------------------------
        5. ON THE MOVE
+
        Action & Implementation
        ------------------------------------------------------- */
 
@@ -162,6 +268,7 @@
 
     /* -------------------------------------------------------
        6. THOUGHTFUL REFLECTION
+
        Reflection & Insight
        ------------------------------------------------------- */
 
@@ -181,6 +288,7 @@
 
     /* -------------------------------------------------------
        7. INSIGHT GUIDE
+
        Teaching & Clarifying
        ------------------------------------------------------- */
 
@@ -200,6 +308,7 @@
 
     /* -------------------------------------------------------
        8. CALM PRESENCE
+
        Emotional Support & Calm
        ------------------------------------------------------- */
 
@@ -229,6 +338,11 @@
     );
 
 
+  /* ---------------------------------------------------------
+     If the Na'Vi container does not exist on the page,
+     there is nothing for this script to initialise.
+     --------------------------------------------------------- */
+
   if (!container) {
     return;
   }
@@ -237,8 +351,16 @@
   /* =========================================================
      PAGE CONTEXT
 
-     Used internally by the future AI/backend.
-     Not displayed to the learner.
+     These values are interface signals.
+
+     They are:
+       - not learner-facing
+       - not proof of learner progress
+       - not proof that a learner completed a lesson
+       - not a replacement for Brain reasoning
+
+     They help the Brain understand where the interface
+     currently exists.
      ========================================================= */
 
   const page =
@@ -253,6 +375,11 @@
 
   /* =========================================================
      SESSION
+
+     A browser session identifier allows the Brain/backend
+     to distinguish one conversation session from another.
+
+     This is not a learner-progress record.
      ========================================================= */
 
   const SESSION_KEY =
@@ -285,7 +412,11 @@
 
 
   /* =========================================================
-     ACTIVE STATE
+     ACTIVE VISUAL STATE
+
+     The initial state is calm.
+
+     The Brain may later request another valid visual state.
      ========================================================= */
 
   let activeState =
@@ -303,10 +434,11 @@
   /* =========================================================
      CREATE NA'VI PAGE WRAPPER
 
-     The wrapper remains in the normal page flow.
+     The wrapper remains in the normal page flow until the
+     learner moves Na'Vi.
 
-     Na'Vi initially appears exactly where the
-     Systeme.io HTML block has been placed.
+     Na'Vi initially appears exactly where the Systeme.io
+     HTML block has been placed.
      ========================================================= */
 
   const wrapper =
@@ -500,7 +632,7 @@
 
      The chat is fixed to the browser viewport.
 
-     It is independent from Na'Vi's position.
+     It is independent from Na'Vi's physical position.
      ========================================================= */
 
   const chat =
@@ -843,8 +975,7 @@
     closeButton
   );
 
-
-  /* =========================================================
+    /* =========================================================
      CHAT BODY
      ========================================================= */
 
@@ -1087,6 +1218,15 @@
 
   /* =========================================================
      QUICK ACTIONS
+
+     These are interface shortcuts.
+
+     IMPORTANT:
+
+     A button label is not the learner's full intent.
+
+     The resulting message is still sent to the Brain,
+     which interprets the learner's actual need.
      ========================================================= */
 
   const quickActions =
@@ -1352,6 +1492,10 @@
   );
 
 
+  /* =========================================================
+     SEND BUTTON
+     ========================================================= */
+
   const sendButton =
     document.createElement(
       "button"
@@ -1564,27 +1708,38 @@
   let pointerActive =
     false;
 
+
   let pointerMoved =
     false;
+
 
   let pointerStartX =
     0;
 
+
   let pointerStartY =
     0;
+
 
   let originalLeft =
     0;
 
+
   let originalTop =
     0;
+
 
   let dragOffsetX =
     0;
 
+
   let dragOffsetY =
     0;
 
+
+  /* =========================================================
+     GET STORED NA'VI POSITION
+     ========================================================= */
 
   function getStoredPosition() {
 
@@ -1630,6 +1785,10 @@
   }
 
 
+  /* =========================================================
+     SAVE NA'VI POSITION
+     ========================================================= */
+
   function savePosition(
     left,
     top
@@ -1662,6 +1821,10 @@
   }
 
 
+  /* =========================================================
+     CLAMP VALUE
+     ========================================================= */
+
   function clamp(
     value,
     min,
@@ -1678,6 +1841,10 @@
 
   }
 
+
+  /* =========================================================
+     APPLY STORED NA'VI POSITION
+     ========================================================= */
 
   function applyStoredPosition() {
 
@@ -1698,7 +1865,7 @@
       Math.max(
         0,
         window.innerWidth -
-        rect.width
+          rect.width
       );
 
 
@@ -1706,7 +1873,7 @@
       Math.max(
         0,
         window.innerHeight -
-        rect.height
+          rect.height
       );
 
 
@@ -1751,6 +1918,10 @@
 
   }
 
+
+  /* =========================================================
+     BEGIN POINTER DRAG
+     ========================================================= */
 
   function beginPointerDrag(
     event
@@ -1821,6 +1992,9 @@
 
   }
 
+    /* =========================================================
+     MOVE POINTER DRAG
+     ========================================================= */
 
   function movePointerDrag(
     event
@@ -1863,14 +2037,12 @@
     }
 
 
-    /*
-
+    /* -------------------------------------------------------
        Once dragging begins, switch the wrapper to fixed
        viewport positioning.
 
        This allows Na'Vi to move anywhere on screen.
-
-    */
+       ------------------------------------------------------- */
 
     wrapper.style.position =
       "fixed";
@@ -1896,7 +2068,7 @@
       Math.max(
         0,
         window.innerWidth -
-        rect.width
+          rect.width
       );
 
 
@@ -1904,7 +2076,7 @@
       Math.max(
         0,
         window.innerHeight -
-        rect.height
+          rect.height
       );
 
 
@@ -1938,6 +2110,10 @@
 
   }
 
+
+  /* =========================================================
+     END POINTER DRAG
+     ========================================================= */
 
   function endPointerDrag(
     event
@@ -1975,6 +2151,12 @@
     }
 
 
+    /* -------------------------------------------------------
+       If the learner moved Na'Vi, save the new position.
+
+       A drag release must not also open the chat.
+       ------------------------------------------------------- */
+
     if (pointerMoved) {
 
       const rect =
@@ -1986,11 +2168,6 @@
         rect.top
       );
 
-
-      /*
-         Prevent the drag release from also triggering
-         a normal click.
-      */
 
       setTimeout(
         function () {
@@ -2008,10 +2185,18 @@
     }
 
 
+    /* -------------------------------------------------------
+       If there was no movement, this was a normal click.
+       ------------------------------------------------------- */
+
     toggleChat();
 
   }
 
+
+  /* =========================================================
+     POINTER EVENTS
+     ========================================================= */
 
   naviButton.addEventListener(
     "pointerdown",
@@ -2038,8 +2223,10 @@
       pointerActive =
         false;
 
+
       pointerMoved =
         false;
+
 
       naviButton.style.cursor =
         "grab";
@@ -2158,21 +2345,43 @@
      NA'VI MESSAGE
      ========================================================= */
 
-    function renderNaviMessage(
+  function renderNaviMessage(
     text
   ) {
 
     const fragment =
       document.createDocumentFragment();
 
+
+    /* -------------------------------------------------------
+       Normalise numbered responses.
+
+       This allows Brain responses such as:
+
+       1. First step
+       2. Second step
+       3. Third step
+
+       to render as a readable ordered list.
+       ------------------------------------------------------- */
+
     const normalized =
       String(text || "")
-        .replace(/\s+(?=\d+\.\s)/g, "\n");
+        .replace(
+          /\s+(?=\d+\.\s)/g,
+          "\n"
+        );
+
 
     const lines =
-      normalized.split(/\r?\n/);
+      normalized.split(
+        /\r?\n/
+      );
 
-    let list = null;
+
+    let list =
+      null;
+
 
     lines.forEach(
       function (line) {
@@ -2180,13 +2389,30 @@
         const trimmed =
           line.trim();
 
+
+        /* ---------------------------------------------------
+           Empty line
+           --------------------------------------------------- */
+
         if (!trimmed) {
-          list = null;
+
+          list =
+            null;
+
           return;
+
         }
 
+
+        /* ---------------------------------------------------
+           Numbered list item
+           --------------------------------------------------- */
+
         const match =
-          trimmed.match(/^(\d+)\.\s+(.*)$/);
+          trimmed.match(
+            /^(\d+)\.\s+(.*)$/
+          );
+
 
         if (match) {
 
@@ -2197,11 +2423,14 @@
                 "ol"
               );
 
+
             list.style.margin =
               "6px 0 0 20px";
 
+
             list.style.padding =
               "0";
+
 
             fragment.appendChild(
               list
@@ -2209,40 +2438,56 @@
 
           }
 
+
           const item =
             document.createElement(
               "li"
             );
 
+
           item.style.marginBottom =
             "5px";
+
 
           appendNaviInlineMarkdown(
             item,
             match[2]
           );
 
+
           list.appendChild(
             item
           );
 
+
           return;
+
         }
 
-        list = null;
+
+        /* ---------------------------------------------------
+           Normal paragraph
+           --------------------------------------------------- */
+
+        list =
+          null;
+
 
         const paragraph =
           document.createElement(
             "div"
           );
 
+
         paragraph.style.marginBottom =
           "6px";
+
 
         appendNaviInlineMarkdown(
           paragraph,
           trimmed
         );
+
 
         fragment.appendChild(
           paragraph
@@ -2251,129 +2496,169 @@
       }
     );
 
+
     return fragment;
 
   }
 
 
-function appendNaviInlineMarkdown(
-  element,
-  text
-) {
+  /* =========================================================
+     NA'VI INLINE MARKDOWN
 
-  const parts =
-    String(text || "").split(
-      /(\[[^\]]+\]\(https:\/\/www\.godigicraft\.com\/[^)\s]+\)|\*\*[^*]+\*\*)/g
-    );
+     Supported:
+       - verified Godigicraft links
+       - bold text
 
-  parts.forEach(
-    function (part) {
+     Everything else is rendered as plain text.
 
-      /* -------------------------------------------------------
-         VERIFIED MARKDOWN LINK
-         ------------------------------------------------------- */
+     This deliberately avoids injecting arbitrary HTML from
+     the Brain response into the learner's browser.
+     ========================================================= */
 
-      const linkMatch =
-        part.match(
-          /^\[([^\]]+)\]\((https:\/\/www\.godigicraft\.com\/[^)\s]+)\)$/
-        );
+  function appendNaviInlineMarkdown(
+    element,
+    text
+  ) {
 
-      if (linkMatch) {
-
-        const linkText =
-          linkMatch[1];
-
-        const linkUrl =
-          linkMatch[2];
-
-        const link =
-          document.createElement(
-            "a"
-          );
-
-        link.textContent =
-          linkText;
-
-        link.href =
-          linkUrl;
-
-        link.target =
-          "_blank";
-
-        link.rel =
-          "noopener noreferrer";
-
-        Object.assign(
-          link.style,
-          {
-
-            color:
-              "#176b3a",
-
-            fontWeight:
-              "600",
-
-            textDecoration:
-              "underline",
-
-            cursor:
-              "pointer"
-
-          }
-        );
-
-        element.appendChild(
-          link
-        );
-
-        return;
-      }
-
-
-      /* -------------------------------------------------------
-         BOLD TEXT
-         ------------------------------------------------------- */
-
-      if (
-        part.startsWith("**") &&
-        part.endsWith("**")
-      ) {
-
-        const bold =
-          document.createElement(
-            "strong"
-          );
-
-        bold.textContent =
-          part.slice(
-            2,
-            -2
-          );
-
-        element.appendChild(
-          bold
-        );
-
-        return;
-      }
-
-
-      /* -------------------------------------------------------
-         NORMAL TEXT
-         ------------------------------------------------------- */
-
-      element.appendChild(
-        document.createTextNode(
-          part
-        )
+    const parts =
+      String(text || "").split(
+        /(\[[^\]]+\]\(https:\/\/www\.godigicraft\.com\/[^)\s]+\)|\*\*[^*]+\*\*)/g
       );
 
-    }
-  );
 
-}
+    parts.forEach(
+      function (part) {
 
-function addNaviMessage(
+
+        /* ---------------------------------------------------
+           VERIFIED MARKDOWN LINK
+           --------------------------------------------------- */
+
+        const linkMatch =
+          part.match(
+            /^\[([^\]]+)\]\((https:\/\/www\.godigicraft\.com\/[^)\s]+)\)$/
+          );
+
+
+        if (linkMatch) {
+
+          const linkText =
+            linkMatch[1];
+
+
+          const linkUrl =
+            linkMatch[2];
+
+
+          const link =
+            document.createElement(
+              "a"
+            );
+
+
+          link.textContent =
+            linkText;
+
+
+          link.href =
+            linkUrl;
+
+
+          link.target =
+            "_blank";
+
+
+          link.rel =
+            "noopener noreferrer";
+
+
+          Object.assign(
+            link.style,
+            {
+
+              color:
+                "#176b3a",
+
+              fontWeight:
+                "600",
+
+              textDecoration:
+                "underline",
+
+              cursor:
+                "pointer"
+
+            }
+          );
+
+
+          element.appendChild(
+            link
+          );
+
+
+          return;
+
+        }
+
+
+        /* ---------------------------------------------------
+           BOLD TEXT
+           --------------------------------------------------- */
+
+        if (
+          part.startsWith("**") &&
+          part.endsWith("**")
+        ) {
+
+          const bold =
+            document.createElement(
+              "strong"
+            );
+
+
+          bold.textContent =
+            part.slice(
+              2,
+              -2
+            );
+
+
+          element.appendChild(
+            bold
+          );
+
+
+          return;
+
+        }
+
+
+        /* ---------------------------------------------------
+           NORMAL TEXT
+
+           Text is inserted with createTextNode rather than
+           innerHTML so Brain responses cannot inject
+           arbitrary HTML or script into the interface.
+           --------------------------------------------------- */
+
+        element.appendChild(
+          document.createTextNode(
+            part
+          )
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     ADD NA'VI MESSAGE TO CHAT
+     ========================================================= */
+
+  function addNaviMessage(
     text
   ) {
 
@@ -2445,7 +2730,7 @@ function addNaviMessage(
       );
 
 
-        bubble.appendChild(
+    bubble.appendChild(
       renderNaviMessage(
         text
       )
@@ -2509,14 +2794,189 @@ function addNaviMessage(
 
 
   /* =========================================================
-     BUILD BACKEND PAYLOAD
+     END OF INTERFACE RENDERING LAYER
+     ========================================================= */
+  /* =========================================================
+     NERVOUS SYSTEM — SIGNAL BUILDING
+
+     The Frontend / Nervous System carries signals.
+
+     It does NOT decide:
+       - what the learner needs
+       - which CONTROL module applies
+       - which knowledge should be retrieved
+       - whether the learner should continue/revisit/pause
+       - assessment results
+       - learner progress
+
+     Those decisions belong to the Na'Vi Brain and its
+     authorised knowledge sources.
+
+     The Frontend provides the Brain with the signals it can
+     actually observe.
+     ========================================================= */
+
+  function buildBrainSignal(
+    text
+  ) {
+
+    return {
+
+      /* -----------------------------------------------------
+         SIGNAL PROTOCOL
+         ----------------------------------------------------- */
+
+      protocol:
+        "navi-brain-signal",
+
+      protocolVersion:
+        "1.0",
+
+      source:
+        "Na’Vi Frontend/Nervous System",
+
+
+      /* -----------------------------------------------------
+         IDENTITY
+
+         These are stable system identifiers.
+         They are not learner-facing routing labels.
+         ----------------------------------------------------- */
+
+      companion:
+        "Na’Vi",
+
+      framework:
+        "CONTROL Framework",
+
+
+      /* -----------------------------------------------------
+         LEARNER MESSAGE
+
+         The Frontend carries the learner's words exactly as
+         entered, after basic whitespace trimming.
+
+         The Brain interprets the meaning.
+         ----------------------------------------------------- */
+
+      message:
+        text,
+
+
+      /* -----------------------------------------------------
+         SESSION SIGNAL
+         ----------------------------------------------------- */
+
+      session: {
+
+        id:
+          sessionId
+
+      },
+
+
+      /* -----------------------------------------------------
+         INTERFACE SIGNAL
+
+         The Frontend knows where the companion is being
+         displayed and what visual state it is currently using.
+
+         These are contextual signals, not conclusions.
+         ----------------------------------------------------- */
+
+      interface: {
+
+        page:
+          page,
+
+        context:
+          context,
+
+        activeState:
+          activeState
+
+      },
+
+
+      /* -----------------------------------------------------
+         EXPLICIT SIGNAL GROUPS
+
+         These make the architecture clear to the Brain.
+
+         Learner signal:
+           What the learner has said.
+
+         Interface signal:
+           What the Frontend knows about the current page
+           and presentation state.
+
+         The Brain combines these with its own knowledge,
+         retrieval and reasoning.
+         ----------------------------------------------------- */
+
+      signals: {
+
+        learner: {
+
+          message:
+            text
+
+        },
+
+
+        interface: {
+
+          page:
+            page,
+
+          context:
+            context,
+
+          activeState:
+            activeState
+
+        }
+
+      }
+
+    };
+
+  }
+
+
+  /* =========================================================
+     BACKWARD-COMPATIBLE MESSAGE PAYLOAD
+
+     The new Brain signal is the primary contract.
+
+     The original top-level fields remain temporarily
+     available so the current backend can transition without
+     requiring the entire production system to change at once.
+
+     The duplicate fields do NOT represent duplicate
+     architecture.
+
+     They are compatibility fields during migration.
      ========================================================= */
 
   function buildMessagePayload(
     text
   ) {
 
+    const signal =
+      buildBrainSignal(
+        text
+      );
+
+
     return {
+
+      ...signal,
+
+
+      /* -----------------------------------------------------
+         LEGACY / TRANSITION FIELDS
+         ----------------------------------------------------- */
 
       message:
         text,
@@ -2531,13 +2991,7 @@ function addNaviMessage(
         context,
 
       activeState:
-        activeState,
-
-      companion:
-        "Na’Vi",
-
-      framework:
-        "CONTROL Framework"
+        activeState
 
     };
 
@@ -2545,10 +2999,200 @@ function addNaviMessage(
 
 
   /* =========================================================
+     BRAIN RESPONSE HANDLER
+
+     The Brain makes the decision.
+
+     The Nervous System carries the result back to the
+     Frontend.
+
+     Supported response fields:
+
+       reply
+       state
+       navigation
+       signal
+       metadata
+
+     The Frontend only acts on fields it understands.
+
+     Unknown fields are safely ignored.
+     ========================================================= */
+
+  function processBrainResponse(
+    data
+  ) {
+
+    if (
+      !data ||
+      typeof data !== "object"
+    ) {
+
+      throw new Error(
+        "Invalid Na’Vi Brain response."
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       VISUAL STATE
+
+       The Brain may request a valid Na'Vi visual state.
+
+       A state changes presentation only.
+
+       It does NOT change:
+         - Na'Vi's identity
+         - knowledge authority
+         - safety rules
+         - learner ownership
+         - Brain reasoning
+       ------------------------------------------------------- */
+
+    if (
+      typeof data.state === "string"
+    ) {
+
+      window.NaVi.setState(
+        data.state
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       NAVIGATION
+
+       Navigation is treated as a Brain instruction.
+
+       The Frontend does not:
+         - construct URLs
+         - guess destinations
+         - create lecture URLs
+         - infer missing pages
+
+       It only accepts a verified destination in the
+       supported domain.
+       ------------------------------------------------------- */
+
+    if (
+      data.navigation &&
+      typeof data.navigation === "object"
+    ) {
+
+      handleBrainNavigation(
+        data.navigation
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       LEARNER-FACING RESPONSE
+
+       Only the Brain's reply is rendered as Na'Vi's response.
+       ------------------------------------------------------- */
+
+    if (
+      typeof data.reply === "string" &&
+      data.reply.trim()
+    ) {
+
+      addNaviMessage(
+        data.reply
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     VERIFIED BRAIN NAVIGATION
+
+     Expected Brain instruction:
+
+       {
+         type: "verified_url",
+         url: "https://www.godigicraft.com/..."
+       }
+
+     The Frontend does not invent, repair or transform the URL.
+
+     If the destination is not a supported verified URL,
+     the instruction is ignored safely.
+     ========================================================= */
+
+  function handleBrainNavigation(
+    navigation
+  ) {
+
+    if (
+      navigation.type !==
+      "verified_url"
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      typeof navigation.url !==
+      "string"
+    ) {
+
+      return;
+
+    }
+
+
+    const url =
+      navigation.url.trim();
+
+
+    /* -------------------------------------------------------
+       Only verified HTTPS Godigicraft destinations are
+       accepted by this Frontend navigation layer.
+
+       This mirrors the existing learner-facing link rule.
+       ------------------------------------------------------- */
+
+    if (
+      !/^https:\/\/www\.godigicraft\.com\//i.test(
+        url
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  }
+
+
+  /* =========================================================
      SEND MESSAGE
 
-     The backend connection will be activated when
-     CONFIG.apiEndpoint is populated.
+     The Backend endpoint is the Brain connection.
+
+     The Frontend / Nervous System:
+
+       1. receives learner input
+       2. creates a signal
+       3. transports the signal
+       4. receives the Brain response
+       5. presents the response
+
+     It does not perform the Brain's reasoning locally.
      ========================================================= */
 
   async function submitUserMessage(
@@ -2566,6 +3210,10 @@ function addNaviMessage(
     }
 
 
+    /* -------------------------------------------------------
+       SHOW LEARNER MESSAGE IMMEDIATELY
+       ------------------------------------------------------- */
+
     addLearnerMessage(
       cleanText
     );
@@ -2575,18 +3223,36 @@ function addNaviMessage(
       "";
 
 
+    /* -------------------------------------------------------
+       CHECK BRAIN CONNECTION
+       ------------------------------------------------------- */
+
     if (!CONFIG.apiEndpoint) {
+
+      addNaviMessage(
+        "I’m not connected to my Brain right now."
+      );
+
       return;
+
     }
 
 
     try {
+
+      /* -----------------------------------------------------
+         BUILD THE SIGNAL
+         ----------------------------------------------------- */
 
       const payload =
         buildMessagePayload(
           cleanText
         );
 
+
+      /* -----------------------------------------------------
+         TRANSPORT SIGNAL TO BRAIN
+         ----------------------------------------------------- */
 
       const response =
         await fetch(
@@ -2611,6 +3277,10 @@ function addNaviMessage(
         );
 
 
+      /* -----------------------------------------------------
+         HTTP FAILURE
+         ----------------------------------------------------- */
+
       if (!response.ok) {
 
         throw new Error(
@@ -2620,29 +3290,43 @@ function addNaviMessage(
       }
 
 
+      /* -----------------------------------------------------
+         READ BRAIN RESPONSE
+         ----------------------------------------------------- */
+
       const data =
-  await response.json();
+        await response.json();
 
-if (
-  data &&
-  data.reply
-) {
 
-  if (data.state) {
-    window.NaVi.setState(data.state);
-  }
+      /* -----------------------------------------------------
+         HAND RESPONSE TO NERVOUS SYSTEM
+         ----------------------------------------------------- */
 
-  addNaviMessage(
-    data.reply
-  );
+      processBrainResponse(
+        data
+      );
 
-}
 
     } catch (error) {
 
       console.error(
         "Na’Vi connection error:",
         error
+      );
+
+
+      /* -----------------------------------------------------
+         USER-FACING FALLBACK
+
+         Do not expose:
+           - API details
+           - internal errors
+           - stack traces
+           - backend architecture
+         ----------------------------------------------------- */
+
+      addNaviMessage(
+        "I’m having trouble connecting right now. Please try again in a moment."
       );
 
     }
@@ -2668,6 +3352,11 @@ if (
 
   /* =========================================================
      ENTER KEY
+
+     Enter sends the message.
+
+     Shift + Enter remains available for future multiline
+     input behaviour.
      ========================================================= */
 
   input.addEventListener(
@@ -2681,6 +3370,7 @@ if (
 
         event.preventDefault();
 
+
         submitUserMessage(
           input.value
         );
@@ -2693,6 +3383,16 @@ if (
 
   /* =========================================================
      NA'VI STATE CONTROL
+
+     The Brain may request one of the eight known visual
+     states.
+
+     The Frontend validates the state before applying it.
+
+     Invalid state names do nothing.
+
+     This prevents arbitrary backend values from changing
+     the interface unexpectedly.
      ========================================================= */
 
   window.NaVi = {
@@ -2727,6 +3427,10 @@ if (
 
         }
 
+
+        /* ---------------------------------------------------
+           Update every visible Na'Vi representation.
+           --------------------------------------------------- */
 
         mainNavi.src =
           image;
@@ -2769,19 +3473,51 @@ if (
 
         };
 
+      },
+
+
+    /* -------------------------------------------------------
+       ARCHITECTURE INFORMATION
+
+       Useful for debugging and controlled system inspection.
+
+       This does not expose Brain reasoning or private
+       knowledge.
+       ------------------------------------------------------- */
+
+    getArchitecture:
+      function () {
+
+        return {
+
+          version:
+            CONFIG.version,
+
+          layer:
+            CONFIG.layer,
+
+          protocol:
+            CONFIG.protocol,
+
+          protocolVersion:
+            CONFIG.protocolVersion,
+
+          brainEndpoint:
+            CONFIG.apiEndpoint
+
+        };
+
       }
 
   };
-
-
-  /* =========================================================
+    /* =========================================================
      ADD NA'VI TO SYSTEME.IO
-
+     
      Initial placement:
        Exactly where the #navi-companion block exists.
 
-     The chat is attached to the document body:
-       Bottom-right of the browser.
+     Chat placement:
+       Fixed to the bottom-right of the browser viewport.
      ========================================================= */
 
   wrapper.appendChild(
@@ -2802,10 +3538,10 @@ if (
   /* =========================================================
      RESTORE PREVIOUS NA'VI POSITION
 
-     If the learner has previously moved Na'Vi, restore
-     her position.
+     If the learner has previously moved Na'Vi, restore the
+     saved position.
 
-     Otherwise she remains exactly where the
+     Otherwise Na'Vi remains exactly where the
      #navi-companion block has been placed.
      ========================================================= */
 
@@ -2820,6 +3556,12 @@ if (
 
   /* =========================================================
      KEEP DRAGGED NA'VI INSIDE THE VIEWPORT
+
+     If the browser window changes size, make sure a stored
+     Na'Vi position remains visible.
+
+     This is a presentation safeguard only.
+     It does not affect Brain reasoning.
      ========================================================= */
 
   window.addEventListener(
@@ -2843,7 +3585,7 @@ if (
         Math.max(
           0,
           window.innerWidth -
-          rect.width
+            rect.width
         );
 
 
@@ -2851,7 +3593,7 @@ if (
         Math.max(
           0,
           window.innerHeight -
-          rect.height
+            rect.height
         );
 
 
@@ -2886,5 +3628,28 @@ if (
 
     }
   );
+
+
+  /* =========================================================
+     FRONTEND / NERVOUS SYSTEM READY
+
+     At this point:
+
+       ✓ Na'Vi interface exists
+       ✓ visual state system exists
+       ✓ learner input exists
+       ✓ page/context signals exist
+       ✓ session signal exists
+       ✓ Brain signal contract exists
+       ✓ Brain response handling exists
+       ✓ verified navigation handling exists
+       ✓ drag behaviour exists
+       ✓ position persistence exists
+
+     The Frontend does not attempt to become the Brain.
+
+     It waits for learner interaction and carries signals
+     between the learner and the Brain.
+     ========================================================= */
 
 })();
