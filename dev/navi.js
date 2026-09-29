@@ -2952,8 +2952,8 @@
 
         parent.appendChild(
           createNavigationLink(
-            best.text,
-            best.target
+            best,
+            best.text
           )
         );
 
@@ -3001,8 +3001,8 @@
 
         element.appendChild(
           createNavigationLink(
-            resolved.text,
-            resolved.target
+            resolved,
+            resolved.text
           )
         );
 
