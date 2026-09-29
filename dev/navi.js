@@ -1,76 +1,15 @@
 (function () {
-
   "use strict";
-
 
   /* =========================================================
      NA'VI — CONTROL COMPANION
-     FRONTEND / NERVOUS SYSTEM
-     VERSION 2.0 — CLEAN BUILD
-
-     Architecture:
-
-       Knowledge
-           ↓
-       Brain
-           ↓
-       Nervous System
-           ↓
-       Frontend
-           ↓
-       Learner
-
-     This file is responsible for:
-
-       • displaying Na'Vi
-       • receiving learner interaction
-       • detecting page/context
-       • sending signals to the Brain
-       • receiving Brain responses
-       • displaying Brain responses
-       • displaying approved visual states
-       • handling approved navigation
-       • remembering Na'Vi's position
-
-     This file does NOT:
-
-       • make Course decisions
-       • score assessments
-       • retrieve Course knowledge
-       • invent Course content
-       • invent URLs
-       • determine learner progress
-       • access private Notion information
-       • replace the Brain
-
-     ========================================================= */
-
-
-  /* =========================================================
-     CONFIGURATION
+     Production Companion
      ========================================================= */
 
   const CONFIG = {
 
     /* -------------------------------------------------------
-       VERSION
-       ------------------------------------------------------- */
-
-    version:
-      "2.0",
-
-    layer:
-      "Frontend / Nervous System",
-
-    protocol:
-      "navi-brain-signal",
-
-    protocolVersion:
-      "1.0",
-
-
-    /* -------------------------------------------------------
-       NA'VI DEFAULT IMAGE
+       NA'VI IMAGE STATES
        ------------------------------------------------------- */
 
     defaultImage:
@@ -78,13 +17,12 @@
 
 
     /* -------------------------------------------------------
-       BRAIN ENDPOINT
+       SECURE BACKEND
 
-       IMPORTANT:
-       No OpenAI API key belongs here.
+       The OpenAI/Cloudflare endpoint will be added here
+       after the CONTROL Knowledge Base is finalized.
 
-       The browser communicates only with the
-       Na'Vi Brain Worker.
+       NEVER place an OpenAI API key in this file.
        ------------------------------------------------------- */
 
     apiEndpoint:
@@ -95,38 +33,32 @@
        NA'VI SIZE
        ------------------------------------------------------- */
 
-    characterWidth:
-      120,
+    characterWidth: 120,
 
 
     /* -------------------------------------------------------
        CHAT SIZE
        ------------------------------------------------------- */
 
-    chatWidth:
-      380,
+    chatWidth: 380,
 
-    chatHeight:
-      560,
+    chatHeight: 560,
 
 
     /* -------------------------------------------------------
        CHAT POSITION
        ------------------------------------------------------- */
 
-    chatRight:
-      20,
+    chatRight: 20,
 
-    chatBottom:
-      20,
+    chatBottom: 20,
 
 
     /* -------------------------------------------------------
        DRAG SETTINGS
        ------------------------------------------------------- */
 
-    dragThreshold:
-      6,
+    dragThreshold: 6,
 
 
     /* -------------------------------------------------------
@@ -140,27 +72,15 @@
 
 
   /* =========================================================
-     NA'VI VISUAL STATES
-     =========================================================
-
-     These are presentation states only.
-
-     They do NOT change:
-
-       • Na'Vi's identity
-       • Course rules
-       • source authority
-       • safety boundaries
-       • learner ownership
-       • Brain reasoning
-       • knowledge
-
-     The Brain may request a state.
-
-     The Frontend only displays it.
+     NA'VI STATES
      ========================================================= */
 
   const NAVI_STATES = {
+
+    /* -------------------------------------------------------
+       1. FRIENDLY WAVE
+       Welcome & Greeting
+       ------------------------------------------------------- */
 
     friendlyWave: {
 
@@ -176,6 +96,11 @@
     },
 
 
+    /* -------------------------------------------------------
+       2. CONFIDENT GUIDE
+       Decision & Direction
+       ------------------------------------------------------- */
+
     confidentGuide: {
 
       name:
@@ -190,6 +115,11 @@
     },
 
 
+    /* -------------------------------------------------------
+       3. ENCOURAGING SUPPORT
+       Motivation & Reassurance
+       ------------------------------------------------------- */
+
     encouragingSupport: {
 
       name:
@@ -199,604 +129,126 @@
         "Motivation & Reassurance",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16a9a7e0c91.70517806_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa169c82f6dd2.91566060_EncouragingSupport.gif"
 
     },
 
 
-    thinking: {
+    /* -------------------------------------------------------
+       4. OPEN ARMS
+       Welcome Back & Recovery
+       ------------------------------------------------------- */
+
+    openArms: {
 
       name:
-        "Thinking",
+        "Open Arms",
 
       purpose:
-        "Processing",
+        "Welcome Back & Recovery",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16edc3a9e45.07798719_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16bb477d746.37099213_OpenArms.gif"
 
     },
 
 
-    celebrating: {
+    /* -------------------------------------------------------
+       5. ON THE MOVE
+       Action & Implementation
+       ------------------------------------------------------- */
+
+    onTheMove: {
 
       name:
-        "Celebrating",
+        "On the Move",
 
       purpose:
-        "Progress",
+        "Action & Implementation",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa171c7e1f2f1.46610962_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa16d235ec1f1.88850289_OntheMove.gif"
 
     },
 
 
-    calm: {
+    /* -------------------------------------------------------
+       6. THOUGHTFUL REFLECTION
+       Reflection & Insight
+       ------------------------------------------------------- */
+
+    thoughtfulReflection: {
 
       name:
-        "Calm",
+        "Thoughtful Reflection",
 
       purpose:
-        "Grounding",
+        "Reflection & Insight",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa1753e0d8d66.78011162_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa173788b4db9.21365458_ThoughtfulReflection.gif"
 
     },
 
 
-    listening: {
+    /* -------------------------------------------------------
+       7. INSIGHT GUIDE
+       Teaching & Clarifying
+       ------------------------------------------------------- */
+
+    insightGuide: {
 
       name:
-        "Listening",
+        "Insight Guide",
 
       purpose:
-        "Receiving",
+        "Teaching & Clarifying",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa17875ef4de3.66342150_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa1706f52e8b7.18925687_INSIGHTGUIDE.gif"
 
     },
 
 
-    concerned: {
+    /* -------------------------------------------------------
+       8. CALM PRESENCE
+       Emotional Support & Calm
+       ------------------------------------------------------- */
+
+    calmPresence: {
 
       name:
-        "Concerned",
+        "Calm Presence",
 
       purpose:
-        "Gentle Attention",
+        "Emotional Support & Calm",
 
       image:
-        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa17c0b3e7e39.71830647_Na-vi1.gif"
+        "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa17048a20018.95863785_CALMPRESENCE.gif"
 
     }
 
   };
-
-
-  /* =========================================================
-     STATE ALIASES
-     =========================================================
-
-     Brain V2 may return a semantic state.
-
-     The Frontend converts it into one of the approved
-     visual states above.
-
-     This does NOT change the Brain's meaning.
-     ========================================================= */
-
-  const STATE_ALIASES = {
-
-    friendlyWave:
-      "friendlyWave",
-
-    confidentGuide:
-      "confidentGuide",
-
-    encouragingSupport:
-      "encouragingSupport",
-
-    supportive:
-      "encouragingSupport",
-
-    thinking:
-      "thinking",
-
-    clarifying:
-      "thinking",
-
-    celebrating:
-      "celebrating",
-
-    calm:
-      "calm",
-
-    pause:
-      "calm",
-
-    listening:
-      "listening",
-
-    concerned:
-      "concerned",
-
-    safety:
-      "concerned",
-
-    notFound:
-      "listening"
-
-  };
-
-
-  /* =========================================================
-     INTERNAL STATE
-     ========================================================= */
-
-  const STATE = {
-
-    initialized:
-      false,
-
-    open:
-      false,
-
-    processing:
-      false,
-
-    dragging:
-      false,
-
-    dragMoved:
-      false,
-
-
-    dragStartX:
-      0,
-
-    dragStartY:
-      0,
-
-
-    startLeft:
-      null,
-
-    startTop:
-      null,
-
-
-    position:
-      null,
-
-
-    sessionId:
-      null,
-
-
-    activeVisualState:
-      "friendlyWave",
-
-
-    currentPage:
-      "",
-
-    currentContext:
-      "",
-
-    currentActiveState:
-      "",
-
-
-    messages:
-      [],
-
-
-    quickActions:
-      [],
-
-
-    elements:
-      {}
-
-  };
-
-
-  /* =========================================================
-     SESSION ID
-     ========================================================= */
-
-  function createSessionId() {
-
-    return (
-
-      "navi-" +
-
-      Date.now()
-        .toString(36) +
-
-      "-" +
-
-      Math.random()
-        .toString(36)
-        .slice(2, 10)
-
-    );
-
-  }
-
-
-  function getSessionId() {
-
-    try {
-
-      const existing =
-        sessionStorage.getItem(
-          "navi_companion_session"
-        );
-
-
-      if (existing) {
-
-        return existing;
-
-      }
-
-
-      const created =
-        createSessionId();
-
-
-      sessionStorage.setItem(
-
-        "navi_companion_session",
-
-        created
-
-      );
-
-
-      return created;
-
-    } catch (error) {
-
-      return createSessionId();
-
-    }
-
-  }
-
-
-  /* =========================================================
-     PAGE / CONTEXT DETECTION
-     =========================================================
-
-     The host page provides:
-
-       <div
-         id="navi-companion"
-         data-navi-page="..."
-         data-navi-context="..."
-       ></div>
-
-     These identifiers tell the Brain where Na'Vi is.
-
-     The Frontend does not interpret Course meaning from them.
-     It simply carries the signal.
-     ========================================================= */
-
-  function detectPageContext() {
-
-    const companion =
-      document.getElementById(
-        "navi-companion"
-      );
-
-
-    if (!companion) {
-
-      return {
-
-        page:
-          "",
-
-        context:
-          ""
-
-      };
-
-    }
-
-
-    return {
-
-      page:
-        companion.getAttribute(
-          "data-navi-page"
-        ) || "",
-
-      context:
-        companion.getAttribute(
-          "data-navi-context"
-        ) || ""
-
-    };
-
-  }
-
-
-  /* =========================================================
-     INITIALIZE PAGE CONTEXT
-     ========================================================= */
-
-  function initializePageContext() {
-
-    const detected =
-      detectPageContext();
-
-
-    STATE.currentPage =
-      detected.page;
-
-
-    STATE.currentContext =
-      detected.context;
-
-
-    STATE.currentActiveState =
-      document.body?.getAttribute(
-        "data-navi-active-state"
-      ) || "";
-
-  }
-
-
-  /* =========================================================
-     POSITION STORAGE
-     ========================================================= */
-
-  function loadSavedPosition() {
-
-    try {
-
-      const saved =
-        localStorage.getItem(
-          CONFIG.positionStorageKey
-        );
-
-
-      if (!saved) {
-
-        return null;
-
-      }
-
-
-      const parsed =
-        JSON.parse(saved);
-
-
-      if (
-        !parsed ||
-        typeof parsed !== "object"
-      ) {
-
-        return null;
-
-      }
-
-
-      if (
-        typeof parsed.left !==
-          "number" ||
-
-        typeof parsed.top !==
-          "number"
-      ) {
-
-        return null;
-
-      }
-
-
-      return parsed;
-
-    } catch (error) {
-
-      return null;
-
-    }
-
-  }
-
-
-  function savePosition(
-    left,
-    top
-  ) {
-
-    try {
-
-      localStorage.setItem(
-
-        CONFIG.positionStorageKey,
-
-        JSON.stringify({
-
-          left:
-            Math.round(left),
-
-          top:
-            Math.round(top)
-
-        })
-
-      );
-
-    } catch (error) {
-
-      /*
-       * Storage is optional.
-       */
-
-    }
-
-  }
-
-
-  /* =========================================================
-     BASIC UTILITY
-     ========================================================= */
-
-  function escapeHtml(
-    value
-  ) {
-
-    return String(
-      value ?? ""
-    )
-
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-
-      .replace(
-        /</g,
-        "&lt;"
-      )
-
-      .replace(
-        />/g,
-        "&gt;"
-      )
-
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-
-      .replace(
-        /'/g,
-        "&#039;"
-      );
-
-  }
-
-
-    /* =========================================================
-     PAGE TITLE
-     ========================================================= */
-
-  function getPageTitle() {
-
-    const title =
-      document.title;
-
-
-    if (
-      typeof title !==
-      "string"
-    ) {
-
-      return "";
-
-    }
-
-
-    return title.trim();
-
-  }
-
-
-  /* =========================================================
-     CURRENT URL PATH
-     ========================================================= */
-
-  function getCurrentPath() {
-
-    try {
-
-      return (
-        window.location.pathname ||
-        ""
-      );
-
-    } catch (error) {
-
-      return "";
-
-    }
-
-  }
-
-
-  /* =========================================================
-     PAGE SIGNAL
-     =========================================================
-
-     The Frontend reports page information to the Brain.
-
-     It does not decide what the page means.
-
-     Page metadata is context only.
-     ========================================================= */
-
-  function buildPageSignal() {
-
-    return {
-
-      page:
-        STATE.currentPage,
-
-      context:
-        STATE.currentContext,
-
-      title:
-        getPageTitle(),
-
-      path:
-        getCurrentPath()
-
-    };
-
-  }
-
-
-  /* =========================================================
-     REFRESH PAGE SIGNAL
-     ========================================================= */
-
-  function refreshPageSignal() {
-
-    initializePageContext();
-
-    return buildPageSignal();
-
-  }
 
 
   /* =========================================================
      APPROVED NAVIGATION TARGETS
-     =========================================================
 
-     IMPORTANT:
+     These are the only Course destinations Na'Vi may make
+     clickable.
 
-     The Brain does NOT construct URLs.
+     The Brain returns target references.
 
-     The Frontend only resolves navigation targets that
-     are explicitly listed here.
+     This frontend resolves those references locally.
 
-     No URL is generated from a lesson title.
-
+     The Brain never supplies URLs.
      ========================================================= */
 
   const NAVIGATION_TARGETS = {
 
     "Introduction — How to Move Through This Program with Focus":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9729368",
+
 
     "Module 1 — Calm the Overload":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9541102",
@@ -819,92 +271,11 @@
     "Module 7 — Lead Your Journey":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976310",
 
-    "Module 8 — Sustain Your Momentum":
+    "Module 8 — Long-term Control":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986010",
 
     "Maintaining Momentum":
-      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/10387114"
-
-  };
-
-
-  /* =========================================================
-     NAVIGATION TARGET ALIASES
-     =========================================================
-
-     These allow the Brain to return a short learner-facing
-     target such as "Module 1".
-
-     The alias must explicitly map to an approved target.
-
-     ========================================================= */
-
-  const NAVIGATION_ALIASES = {
-
-    "Introduction":
-      "Introduction — How to Move Through This Program with Focus",
-
-    "How to Move Through This Program with Focus":
-      "Introduction — How to Move Through This Program with Focus",
-
-    "Module 1":
-      "Module 1 — Calm the Overload",
-
-    "Module 2":
-      "Module 2 — Organise Your Focus",
-
-    "Module 3":
-      "Module 3 — Navigate Your Pace",
-
-    "Module 4":
-      "Module 4 — Turn Learning Into Action",
-
-    "Module 5":
-      "Module 5 — Reduce Noise",
-
-    "Module 6":
-      "Module 6 — Observe Progress",
-
-    "Module 7":
-      "Module 7 — Lead Your Journey",
-
-    "Module 8":
-      "Module 8 — Sustain Your Momentum",
-
-    "Long-Term Control":
-      "Module 8 — Sustain Your Momentum",
-
-    "Long-term Control":
-      "Module 8 — Sustain Your Momentum",
-
-    "Maintaining Momentum":
-      "Maintaining Momentum"
-
-  };
-
-
-  /* =========================================================
-     LESSON NAVIGATION REGISTRY
-     =========================================================
-
-     These are the confirmed lesson destinations.
-
-     The Brain does not need to know these URLs.
-
-     The Frontend uses this registry only after receiving
-     a navigation target from the Brain.
-
-     ========================================================= */
-
-  const LESSON_NAVIGATION = {
-
-
-    /* -------------------------------------------------------
-       INTRODUCTION
-       ------------------------------------------------------- */
-
-    "How to Move Through This Program with Focus":
-      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9729368",
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/10387114",
 
 
     /* -------------------------------------------------------
@@ -1127,63 +498,61 @@
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986143",
 
     "Module 8 Reflection Check-In":
-      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986190",
-
-
-    /* -------------------------------------------------------
-       MAINTAINING MOMENTUM
-       ------------------------------------------------------- */
-
-    "MAINTAINING MOMENTUM — COURSE COMPLETION / DIRECTION PAGE":
-      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/10387114"
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986190"
 
   };
 
 
   /* =========================================================
-     NORMALIZE NAVIGATION TARGET
+     NAVIGATION ALIASES
+
+     The Brain may return short learner-facing references
+     such as "Module 1".
+
+     These are resolved to confirmed Knowledge Base
+     navigation targets.
      ========================================================= */
 
-  function normalizeNavigationTarget(
-    target
-  ) {
+  const NAVIGATION_ALIASES = {
 
-    if (
-      typeof target !==
-      "string"
-    ) {
+    "Introduction":
+      "Introduction — How to Move Through This Program with Focus",
 
-      return "";
+    "Module 1":
+      "Module 1 — Calm the Overload",
 
-    }
+    "Module 2":
+      "Module 2 — Organise Your Focus",
 
+    "Module 3":
+      "Module 3 — Navigate Your Pace",
 
-    return target
+    "Module 4":
+      "Module 4 — Turn Learning Into Action",
 
-      .trim()
+    "Module 5":
+      "Module 5 — Reduce Noise",
 
-      .replace(
-        /\s+/g,
-        " "
-      );
+    "Module 6":
+      "Module 6 — Observe Progress",
 
-  }
+    "Module 7":
+      "Module 7 — Lead Your Journey",
+
+    "Module 8":
+      "Module 8 — Long-term Control",
+
+    "Long-Term Control":
+      "Module 8 — Long-term Control",
+
+    "Long-term Control":
+      "Module 8 — Long-term Control"
+
+  };
 
 
   /* =========================================================
      RESOLVE NAVIGATION TARGET
-     =========================================================
-
-     Resolution order:
-
-       1. Exact approved module target
-       2. Explicit alias
-       3. Exact approved lesson target
-       4. Otherwise reject
-
-     IMPORTANT:
-
-     Unknown targets are never guessed.
      ========================================================= */
 
   function resolveNavigationTarget(
@@ -1191,203 +560,49 @@
   ) {
 
     const normalized =
-      normalizeNavigationTarget(
-        target
-      );
+      String(
+        target || ""
+      )
+        .trim()
+        .replace(
+          /\s+/g,
+          " "
+        );
 
 
     if (!normalized) {
-
       return null;
-
     }
 
 
-    /* -------------------------------------------------------
-       EXACT CANONICAL TARGET
-       ------------------------------------------------------- */
-
-    if (
-      Object.prototype.hasOwnProperty.call(
-        NAVIGATION_TARGETS,
-        normalized
-      )
-    ) {
-
-      return {
-
-        text:
-          normalized,
-
-        target:
-          normalized,
-
-        url:
-          NAVIGATION_TARGETS[
-            normalized
-          ]
-
-      };
-
-    }
-
-
-    /* -------------------------------------------------------
-       EXPLICIT ALIAS
-       ------------------------------------------------------- */
-
-    const alias =
+    const canonical =
       NAVIGATION_ALIASES[
         normalized
+      ] ||
+      normalized;
+
+
+    const url =
+      NAVIGATION_TARGETS[
+        canonical
       ];
 
 
-    if (
-      alias &&
-      Object.prototype.hasOwnProperty.call(
-        NAVIGATION_TARGETS,
-        alias
-      )
-    ) {
-
-      return {
-
-        text:
-          normalized,
-
-        target:
-          alias,
-
-        url:
-          NAVIGATION_TARGETS[
-            alias
-          ]
-
-      };
-
-    }
-
-
-    /* -------------------------------------------------------
-       EXACT LESSON TARGET
-       ------------------------------------------------------- */
-
-    if (
-      Object.prototype.hasOwnProperty.call(
-        LESSON_NAVIGATION,
-        normalized
-      )
-    ) {
-
-      return {
-
-        text:
-          normalized,
-
-        target:
-          normalized,
-
-        url:
-          LESSON_NAVIGATION[
-            normalized
-          ]
-
-      };
-
-    }
-
-
-    /* -------------------------------------------------------
-       UNKNOWN TARGET
-
-       Never guess.
-       ------------------------------------------------------- */
-
-    return null;
-
-  }
-
-
-  /* =========================================================
-     RESOLVE BRAIN LINK
-     =========================================================
-
-     Expected Brain V2 format:
-
-       {
-         "text": "Module 1",
-         "target": "Module 1 — Calm the Overload"
-       }
-
-     The Frontend resolves the target locally.
-     ========================================================= */
-
-  function resolveBrainLink(
-    link
-  ) {
-
-    if (
-      !link ||
-      typeof link !==
-      "object"
-    ) {
-
+    if (!url) {
       return null;
-
-    }
-
-
-    const text =
-      typeof link.text ===
-      "string"
-
-        ? link.text.trim()
-
-        : "";
-
-
-    const target =
-      typeof link.target ===
-      "string"
-
-        ? link.target.trim()
-
-        : "";
-
-
-    if (
-      !text ||
-      !target
-    ) {
-
-      return null;
-
-    }
-
-
-    const resolved =
-      resolveNavigationTarget(
-        target
-      );
-
-
-    if (!resolved) {
-
-      return null;
-
     }
 
 
     return {
 
       text:
-        text,
+        normalized,
 
       target:
-        resolved.target,
+        canonical,
 
       url:
-        resolved.url
+        url
 
     };
 
@@ -1396,10 +611,6 @@
 
   /* =========================================================
      BUILD APPROVED LINKS
-     =========================================================
-
-     Only links that successfully resolve through the
-     approved registry are allowed into the interface.
      ========================================================= */
 
   function buildApprovedLinks(
@@ -1407,7 +618,9 @@
   ) {
 
     if (
-      !Array.isArray(links)
+      !Array.isArray(
+        links
+      )
     ) {
 
       return [];
@@ -1415,63 +628,105 @@
     }
 
 
-    const approved = [];
+    const approved =
+      [];
 
 
-    for (
-      const link of links
-    ) {
-
-      const resolved =
-        resolveBrainLink(
+    links
+      .slice(
+        0,
+        8
+      )
+      .forEach(
+        function (
           link
-        );
+        ) {
 
-
-      if (!resolved) {
-
-        continue;
-
-      }
-
-
-      const duplicate =
-        approved.some(
-          function (
-            existing
+          if (
+            !link ||
+            typeof link !==
+              "object"
           ) {
 
-            return (
-              existing.url ===
-              resolved.url
-            );
+            return;
 
           }
-        );
 
 
-      if (duplicate) {
+          const text =
+            typeof link.text ===
+              "string"
 
-        continue;
+              ? link.text.trim()
 
-      }
+              : "";
 
 
-      approved.push(
-        resolved
+          const target =
+            typeof link.target ===
+              "string"
+
+              ? link.target.trim()
+
+              : "";
+
+
+          if (
+            !text ||
+            !target
+          ) {
+
+            return;
+
+          }
+
+
+          const resolved =
+            resolveNavigationTarget(
+              target
+            );
+
+
+          if (!resolved) {
+            return;
+          }
+
+
+          const duplicate =
+            approved.some(
+              function (
+                item
+              ) {
+
+                return (
+                  item.url ===
+                  resolved.url
+                );
+
+              }
+            );
+
+
+          if (duplicate) {
+            return;
+          }
+
+
+          approved.push({
+
+            text:
+              text,
+
+            target:
+              resolved.target,
+
+            url:
+              resolved.url
+
+          });
+
+        }
       );
-
-
-      if (
-        approved.length >=
-        8
-      ) {
-
-        break;
-
-      }
-
-    }
 
 
     return approved;
@@ -1484,7 +739,8 @@
      ========================================================= */
 
   function createNavigationLink(
-    link
+    link,
+    label
   ) {
 
     const anchor =
@@ -1497,16 +753,17 @@
       link.url;
 
 
-    anchor.textContent =
-      link.text;
-
-
     anchor.target =
       "_self";
 
 
     anchor.rel =
       "noopener";
+
+
+    anchor.textContent =
+      label ||
+      link.text;
 
 
     anchor.setAttribute(
@@ -1521,8 +778,24 @@
     );
 
 
-    anchor.className =
-      "navi-navigation-link";
+    Object.assign(
+      anchor.style,
+      {
+
+        color:
+          "#176b3a",
+
+        fontWeight:
+          "700",
+
+        textDecoration:
+          "underline",
+
+        cursor:
+          "pointer"
+
+      }
+    );
 
 
     return anchor;
@@ -1530,1767 +803,1342 @@
   }
 
 
-    /* =========================================================
-     FRONTEND STYLES
+  /* =========================================================
+     FIND SYSTEME.IO NA'VI LOCATION
      ========================================================= */
 
-  function injectStyles() {
+  const container =
+    document.getElementById(
+      "navi-companion"
+    );
 
-    if (
-      document.getElementById(
-        "navi-v2-styles"
-      )
-    ) {
 
-      return;
+  if (
+    !container
+  ) {
 
-    }
+    return;
 
+  }
 
-    const style =
-      document.createElement(
-        "style"
-      );
 
+  /* =========================================================
+     PAGE CONTEXT
 
-    style.id =
-      "navi-v2-styles";
+     Used internally by the future AI/backend.
+     Not displayed to the learner.
+     ========================================================= */
 
+  const page =
+    container.dataset.naviPage ||
+    "unknown-page";
 
-    style.textContent = `
 
-      /* =====================================================
-         NA'VI ROOT
-         ===================================================== */
+  const context =
+    container.dataset.naviContext ||
+    "general";
 
-      #navi-v2-root {
 
-        position:
-          fixed;
+  /* =========================================================
+     SESSION
+     ========================================================= */
 
-        z-index:
-          2147483000;
+  const SESSION_KEY =
+    "navi_session_id";
 
-        font-family:
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          Roboto,
-          Helvetica,
-          Arial,
-          sans-serif;
 
-        user-select:
-          none;
+  let sessionId =
+    sessionStorage.getItem(
+      SESSION_KEY
+    );
 
-      }
 
+  if (
+    !sessionId
+  ) {
 
-      /* =====================================================
-         NA'VI CHARACTER
-         ===================================================== */
+    sessionId =
+      "navi-" +
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(
+          2,
+          10
+        );
 
-      #navi-v2-character {
 
-        position:
-          fixed;
-
-        width:
-          ${CONFIG.characterWidth}px;
-
-        height:
-          auto;
-
-        cursor:
-          grab;
-
-        z-index:
-          2147483001;
-
-        touch-action:
-          none;
-
-        user-select:
-          none;
-
-        -webkit-user-drag:
-          none;
-
-        filter:
-          drop-shadow(
-            0 8px 18px
-            rgba(0,0,0,.16)
-          );
-
-        transition:
-          transform .18s ease,
-          filter .18s ease;
-
-      }
-
-
-      #navi-v2-character:hover {
-
-        transform:
-          translateY(-2px)
-          scale(1.015);
-
-        filter:
-          drop-shadow(
-            0 11px 22px
-            rgba(0,0,0,.20)
-          );
-
-      }
-
-
-      #navi-v2-character.navi-dragging {
-
-        cursor:
-          grabbing;
-
-        transform:
-          scale(1.025);
-
-      }
-
-
-      /* =====================================================
-         CHAT WINDOW
-         ===================================================== */
-
-      #navi-v2-chat {
-
-        position:
-          fixed;
-
-        width:
-          min(
-            ${CONFIG.chatWidth}px,
-            calc(100vw - 30px)
-          );
-
-        height:
-          min(
-            ${CONFIG.chatHeight}px,
-            calc(100vh - 120px)
-          );
-
-        right:
-          ${CONFIG.chatRight}px;
-
-        bottom:
-          ${CONFIG.chatBottom + 115}px;
-
-        display:
-          none;
-
-        flex-direction:
-          column;
-
-        overflow:
-          hidden;
-
-        background:
-          rgba(
-            255,
-            255,
-            255,
-            .98
-          );
-
-        border:
-          1px solid
-          rgba(
-            26,
-            72,
-            54,
-            .12
-          );
-
-        border-radius:
-          22px;
-
-        box-shadow:
-          0 20px 60px
-          rgba(
-            0,
-            0,
-            0,
-            .18
-          );
-
-        z-index:
-          2147483002;
-
-        backdrop-filter:
-          blur(12px);
-
-        -webkit-backdrop-filter:
-          blur(12px);
-
-      }
-
-
-      #navi-v2-chat.navi-open {
-
-        display:
-          flex;
-
-        animation:
-          naviChatIn
-          .18s
-          ease
-          both;
-
-      }
-
-
-      @keyframes naviChatIn {
-
-        from {
-
-          opacity:
-            0;
-
-          transform:
-            translateY(10px)
-            scale(.985);
-
-        }
-
-        to {
-
-          opacity:
-            1;
-
-          transform:
-            translateY(0)
-            scale(1);
-
-        }
-
-      }
-
-
-      /* =====================================================
-         CHAT HEADER
-         ===================================================== */
-
-      #navi-v2-header {
-
-        flex:
-          0 0 auto;
-
-        display:
-          flex;
-
-        align-items:
-          center;
-
-        justify-content:
-          space-between;
-
-        padding:
-          14px 16px;
-
-        background:
-          linear-gradient(
-            135deg,
-            #1f6b4f,
-            #285d48
-          );
-
-        color:
-          #ffffff;
-
-      }
-
-
-      #navi-v2-header-left {
-
-        display:
-          flex;
-
-        align-items:
-          center;
-
-        gap:
-          10px;
-
-        min-width:
-          0;
-
-      }
-
-
-      #navi-v2-header-avatar {
-
-        width:
-          40px;
-
-        height:
-          40px;
-
-        border-radius:
-          50%;
-
-        object-fit:
-          cover;
-
-        background:
-          #ffffff;
-
-        border:
-          2px solid
-          rgba(
-            255,
-            255,
-            255,
-            .75
-          );
-
-      }
-
-
-      #navi-v2-header-title {
-
-        font-size:
-          16px;
-
-        font-weight:
-          700;
-
-        line-height:
-          1.15;
-
-      }
-
-
-      #navi-v2-header-subtitle {
-
-        margin-top:
-          3px;
-
-        font-size:
-          11px;
-
-        opacity:
-          .84;
-
-      }
-
-
-      #navi-v2-close {
-
-        width:
-          34px;
-
-        height:
-          34px;
-
-        border:
-          0;
-
-        border-radius:
-          50%;
-
-        background:
-          rgba(
-            255,
-            255,
-            255,
-            .13
-          );
-
-        color:
-          #ffffff;
-
-        cursor:
-          pointer;
-
-        font-size:
-          20px;
-
-        line-height:
-          1;
-
-      }
-
-
-      #navi-v2-close:hover {
-
-        background:
-          rgba(
-            255,
-            255,
-            255,
-            .22
-          );
-
-      }
-
-
-      /* =====================================================
-         MESSAGE AREA
-         ===================================================== */
-
-      #navi-v2-messages {
-
-        flex:
-          1 1 auto;
-
-        overflow-y:
-          auto;
-
-        padding:
-          16px;
-
-        background:
-          linear-gradient(
-            180deg,
-            #f8fbf9 0%,
-            #ffffff 100%
-          );
-
-        scroll-behavior:
-          smooth;
-
-      }
-
-
-      #navi-v2-messages::-webkit-scrollbar {
-
-        width:
-          6px;
-
-      }
-
-
-      #navi-v2-messages::-webkit-scrollbar-thumb {
-
-        background:
-          rgba(
-            31,
-            107,
-            79,
-            .18
-          );
-
-        border-radius:
-          10px;
-
-      }
-
-
-      /* =====================================================
-         MESSAGE ROWS
-         ===================================================== */
-
-      .navi-v2-message-row {
-
-        display:
-          flex;
-
-        margin:
-          0 0 12px;
-
-      }
-
-
-      .navi-v2-message-row.navi-user {
-
-        justify-content:
-          flex-end;
-
-      }
-
-
-      .navi-v2-message {
-
-        max-width:
-          84%;
-
-        padding:
-          11px 13px;
-
-        border-radius:
-          16px;
-
-        font-size:
-          14px;
-
-        line-height:
-          1.5;
-
-        white-space:
-          pre-wrap;
-
-        word-break:
-          break-word;
-
-      }
-
-
-      /* =====================================================
-         ASSISTANT MESSAGE
-         ===================================================== */
-
-      .navi-v2-message-row.navi-assistant
-      .navi-v2-message {
-
-        background:
-          #edf5f0;
-
-        color:
-          #193b2c;
-
-        border-bottom-left-radius:
-          5px;
-
-      }
-
-
-      /* =====================================================
-         USER MESSAGE
-         ===================================================== */
-
-      .navi-v2-message-row.navi-user
-      .navi-v2-message {
-
-        background:
-          #1f6b4f;
-
-        color:
-          #ffffff;
-
-        border-bottom-right-radius:
-          5px;
-
-      }
-
-
-      /* =====================================================
-         NAVIGATION LINKS
-         ===================================================== */
-
-      .navi-v2-message a {
-
-        color:
-          #1f6b4f;
-
-        font-weight:
-          700;
-
-        text-decoration:
-          underline;
-
-        text-underline-offset:
-          2px;
-
-        cursor:
-          pointer;
-
-      }
-
-
-      .navi-v2-message-row.navi-user
-      .navi-v2-message a {
-
-        color:
-          #ffffff;
-
-      }
-
-
-      .navi-navigation-link {
-
-        display:
-          inline-block;
-
-        margin-top:
-          6px;
-
-      }
-
-
-      /* =====================================================
-         QUICK ACTIONS
-         ===================================================== */
-
-      .navi-v2-quick-actions {
-
-        flex:
-          0 0 auto;
-
-        display:
-          flex;
-
-        gap:
-          7px;
-
-        overflow-x:
-          auto;
-
-        padding:
-          9px 12px;
-
-        border-top:
-          1px solid
-          rgba(
-            26,
-            72,
-            54,
-            .08
-          );
-
-        background:
-          #ffffff;
-
-      }
-
-
-      .navi-v2-quick-actions::-webkit-scrollbar {
-
-        height:
-          0;
-
-      }
-
-
-      .navi-v2-quick-action {
-
-        flex:
-          0 0 auto;
-
-        border:
-          1px solid
-          rgba(
-            31,
-            107,
-            79,
-            .20
-          );
-
-        border-radius:
-          999px;
-
-        padding:
-          7px 10px;
-
-        background:
-          #f4faf6;
-
-        color:
-          #1f6b4f;
-
-        font-size:
-          11px;
-
-        font-weight:
-          650;
-
-        cursor:
-          pointer;
-
-      }
-
-
-      .navi-v2-quick-action:hover {
-
-        background:
-          #e8f4ed;
-
-      }
-
-
-      /* =====================================================
-         INPUT AREA
-         ===================================================== */
-
-      #navi-v2-input-area {
-
-        flex:
-          0 0 auto;
-
-        display:
-          flex;
-
-        align-items:
-          flex-end;
-
-        gap:
-          8px;
-
-        padding:
-          11px 12px;
-
-        border-top:
-          1px solid
-          rgba(
-            26,
-            72,
-            54,
-            .10
-          );
-
-        background:
-          #ffffff;
-
-      }
-
-
-      #navi-v2-input {
-
-        flex:
-          1 1 auto;
-
-        min-width:
-          0;
-
-        max-height:
-          100px;
-
-        resize:
-          none;
-
-        border:
-          1px solid
-          rgba(
-            31,
-            107,
-            79,
-            .18
-          );
-
-        border-radius:
-          14px;
-
-        padding:
-          10px 12px;
-
-        outline:
-          none;
-
-        font:
-          inherit;
-
-        font-size:
-          13px;
-
-        line-height:
-          1.4;
-
-        color:
-          #193b2c;
-
-        background:
-          #fbfdfc;
-
-        box-sizing:
-          border-box;
-
-      }
-
-
-      #navi-v2-input:focus {
-
-        border-color:
-          rgba(
-            31,
-            107,
-            79,
-            .48
-          );
-
-        box-shadow:
-          0 0 0 3px
-          rgba(
-            31,
-            107,
-            79,
-            .07
-          );
-
-      }
-
-
-      /* =====================================================
-         SEND BUTTON
-         ===================================================== */
-
-      #navi-v2-send {
-
-        flex:
-          0 0 auto;
-
-        width:
-          42px;
-
-        height:
-          42px;
-
-        border:
-          0;
-
-        border-radius:
-          13px;
-
-        background:
-          #1f6b4f;
-
-        color:
-          #ffffff;
-
-        cursor:
-          pointer;
-
-        display:
-          grid;
-
-        place-items:
-          center;
-
-        font-size:
-          18px;
-
-      }
-
-
-      #navi-v2-send:hover {
-
-        background:
-          #174f3a;
-
-      }
-
-
-      #navi-v2-send:disabled {
-
-        opacity:
-          .48;
-
-        cursor:
-          default;
-
-      }
-
-
-      /* =====================================================
-         TYPING INDICATOR
-         ===================================================== */
-
-      .navi-v2-typing {
-
-        display:
-          inline-flex;
-
-        align-items:
-          center;
-
-        gap:
-          4px;
-
-        padding:
-          11px 13px;
-
-        background:
-          #edf5f0;
-
-        border-radius:
-          16px;
-
-        border-bottom-left-radius:
-          5px;
-
-      }
-
-
-      .navi-v2-typing span {
-
-        width:
-          5px;
-
-        height:
-          5px;
-
-        border-radius:
-          50%;
-
-        background:
-          #1f6b4f;
-
-        animation:
-          naviTyping
-          1s
-          infinite
-          ease-in-out;
-
-      }
-
-
-      .navi-v2-typing span:nth-child(2) {
-
-        animation-delay:
-          .12s;
-
-      }
-
-
-      .navi-v2-typing span:nth-child(3) {
-
-        animation-delay:
-          .24s;
-
-      }
-
-
-      @keyframes naviTyping {
-
-        0%,
-        60%,
-        100% {
-
-          opacity:
-            .35;
-
-          transform:
-            translateY(0);
-
-        }
-
-        30% {
-
-          opacity:
-            1;
-
-          transform:
-            translateY(-3px);
-
-        }
-
-      }
-
-
-      /* =====================================================
-         WELCOME MESSAGE
-         ===================================================== */
-
-      .navi-v2-welcome {
-
-        text-align:
-          left;
-
-        margin-bottom:
-          14px;
-
-      }
-
-
-      .navi-v2-welcome-title {
-
-        font-size:
-          17px;
-
-        font-weight:
-          750;
-
-        color:
-          #193b2c;
-
-        margin-bottom:
-          5px;
-
-      }
-
-
-      .navi-v2-welcome-text {
-
-        font-size:
-          13px;
-
-        line-height:
-          1.5;
-
-        color:
-          #587064;
-
-      }
-
-
-      /* =====================================================
-         MOBILE
-         ===================================================== */
-
-      @media (max-width: 600px) {
-
-        #navi-v2-chat {
-
-          right:
-            10px;
-
-          bottom:
-            92px;
-
-          width:
-            calc(100vw - 20px);
-
-          height:
-            min(
-              620px,
-              calc(100vh - 110px)
-            );
-
-          border-radius:
-            18px;
-
-        }
-
-
-        #navi-v2-character {
-
-          width:
-            100px;
-
-        }
-
-      }
-
-    `;
-
-
-    document.head.appendChild(
-      style
+    sessionStorage.setItem(
+      SESSION_KEY,
+      sessionId
     );
 
   }
 
 
   /* =========================================================
-     CREATE NA'VI INTERFACE
+     ACTIVE STATE
      ========================================================= */
 
-  function createInterface() {
-
-    /*
-     * Prevent duplicate interfaces.
-     */
-
-    if (
-      document.getElementById(
-        "navi-v2-root"
-      )
-    ) {
-
-      return;
-
-    }
+  let activeState =
+    "calmPresence";
 
 
-    /* =======================================================
-       ROOT
-       ======================================================= */
+  /* =========================================================
+     CHAT OPEN STATE
+     ========================================================= */
 
-    const root =
-      document.createElement(
-        "div"
-      );
+  let chatOpen =
+    false;
 
 
-    root.id =
-      "navi-v2-root";
+  /* =========================================================
+     CREATE NA'VI PAGE WRAPPER
 
+     The wrapper remains in the normal page flow.
 
-    /* =======================================================
-       CHARACTER
-       ======================================================= */
+     Na'Vi initially appears exactly where the
+     Systeme.io HTML block has been placed.
+     ========================================================= */
 
-    const character =
-      document.createElement(
-        "img"
-      );
-
-
-    character.id =
-      "navi-v2-character";
-
-
-    character.src =
-      CONFIG.defaultImage;
-
-
-    character.alt =
-      "Na'Vi";
-
-
-    character.draggable =
-      false;
-
-
-    character.setAttribute(
-      "aria-label",
-      "Open Na'Vi"
+  const wrapper =
+    document.createElement(
+      "div"
     );
 
 
-    character.setAttribute(
-      "role",
+  wrapper.id =
+    "navi-widget";
+
+
+  Object.assign(
+    wrapper.style,
+    {
+
+      position:
+        "relative",
+
+      width:
+        "100%",
+
+      boxSizing:
+        "border-box",
+
+      textAlign:
+        "left",
+
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, " +
+        "'Segoe UI', Arial, sans-serif",
+
+      lineHeight:
+        "normal",
+
+      margin:
+        "0",
+
+      padding:
+        "0"
+
+    }
+  );
+
+
+  /* =========================================================
+     NA'VI BUTTON
+     ========================================================= */
+
+  const naviButton =
+    document.createElement(
       "button"
     );
 
 
-    character.tabIndex =
-      0;
+  naviButton.type =
+    "button";
 
 
-    /* =======================================================
-       CHAT WINDOW
-       ======================================================= */
+  naviButton.setAttribute(
+    "aria-label",
+    "Open Na’Vi"
+  );
 
-    const chat =
-      document.createElement(
-        "div"
-      );
 
+  naviButton.setAttribute(
+    "title",
+    "Na’Vi"
+  );
 
-    chat.id =
-      "navi-v2-chat";
 
+  Object.assign(
+    naviButton.style,
+    {
 
-    chat.setAttribute(
-      "role",
-      "dialog"
-    );
+      display:
+        "inline-flex",
 
+      alignItems:
+        "center",
 
-    chat.setAttribute(
-      "aria-label",
-      "Na'Vi CONTROL Course companion"
-    );
+      justifyContent:
+        "center",
 
+      margin:
+        "0",
 
-    /* =======================================================
-       HEADER
-       ======================================================= */
+      padding:
+        "0",
 
-    const header =
-      document.createElement(
-        "div"
-      );
+      border:
+        "0",
 
+      background:
+        "transparent",
 
-    header.id =
-      "navi-v2-header";
+      cursor:
+        "grab",
 
+      lineHeight:
+        "0",
 
-    const headerLeft =
-      document.createElement(
-        "div"
-      );
+      appearance:
+        "none",
 
+      WebkitAppearance:
+        "none",
 
-    headerLeft.id =
-      "navi-v2-header-left";
+      touchAction:
+        "none",
 
+      userSelect:
+        "none",
 
-    const headerAvatar =
-      document.createElement(
-        "img"
-      );
+      WebkitUserSelect:
+        "none"
 
-
-    headerAvatar.id =
-      "navi-v2-header-avatar";
-
-
-    headerAvatar.src =
-      CONFIG.defaultImage;
-
-
-    headerAvatar.alt =
-      "Na'Vi";
-
-
-    const headerText =
-      document.createElement(
-        "div"
-      );
-
-
-    const title =
-      document.createElement(
-        "div"
-      );
-
-
-    title.id =
-      "navi-v2-header-title";
-
-
-    title.textContent =
-      "Na'Vi";
-
-
-    const subtitle =
-      document.createElement(
-        "div"
-      );
-
-
-    subtitle.id =
-      "navi-v2-header-subtitle";
-
-
-    subtitle.textContent =
-      "Your CONTROL Course companion";
-
-
-    headerText.appendChild(
-      title
-    );
-
-
-    headerText.appendChild(
-      subtitle
-    );
-
-
-    headerLeft.appendChild(
-      headerAvatar
-    );
-
-
-    headerLeft.appendChild(
-      headerText
-    );
-
-
-    /* =======================================================
-       CLOSE BUTTON
-       ======================================================= */
-
-    const close =
-      document.createElement(
-        "button"
-      );
-
-
-    close.id =
-      "navi-v2-close";
-
-
-    close.type =
-      "button";
-
-
-    close.setAttribute(
-      "aria-label",
-      "Close Na'Vi"
-    );
-
-
-    close.textContent =
-      "×";
-
-
-    header.appendChild(
-      headerLeft
-    );
-
-
-    header.appendChild(
-      close
-    );
-
-
-    /* =======================================================
-       MESSAGE AREA
-       ======================================================= */
-
-    const messages =
-      document.createElement(
-        "div"
-      );
-
-
-    messages.id =
-      "navi-v2-messages";
-
-
-    messages.setAttribute(
-      "aria-live",
-      "polite"
-    );
-
-
-    /* =======================================================
-       WELCOME MESSAGE
-       ======================================================= */
-
-    const welcome =
-      document.createElement(
-        "div"
-      );
-
-
-    welcome.className =
-      "navi-v2-welcome";
-
-
-    const welcomeTitle =
-      document.createElement(
-        "div"
-      );
-
-
-    welcomeTitle.className =
-      "navi-v2-welcome-title";
-
-
-    welcomeTitle.textContent =
-      "Hi, I’m Na'Vi 👋";
-
-
-    const welcomeText =
-      document.createElement(
-        "div"
-      );
-
-
-    welcomeText.className =
-      "navi-v2-welcome-text";
-
-
-    welcomeText.textContent =
-      "I’m here to help you navigate the CONTROL Course with more clarity and less overwhelm.";
-
-
-    welcome.appendChild(
-      welcomeTitle
-    );
-
-
-    welcome.appendChild(
-      welcomeText
-    );
-
-
-    messages.appendChild(
-      welcome
-    );
-
-
-    /* =======================================================
-       QUICK ACTION AREA
-       ======================================================= */
-
-    const quickActions =
-      document.createElement(
-        "div"
-      );
-
-
-    quickActions.className =
-      "navi-v2-quick-actions";
-
-
-    /* =======================================================
-       INPUT AREA
-       ======================================================= */
-
-    const inputArea =
-      document.createElement(
-        "div"
-      );
-
-
-    inputArea.id =
-      "navi-v2-input-area";
-
-
-    const input =
-      document.createElement(
-        "textarea"
-      );
-
-
-    input.id =
-      "navi-v2-input";
-
-
-    input.rows =
-      1;
-
-
-    input.placeholder =
-      "Ask Na'Vi something…";
-
-
-    input.setAttribute(
-      "aria-label",
-      "Ask Na'Vi"
-    );
-
-
-    /* =======================================================
-       SEND BUTTON
-       ======================================================= */
-
-    const send =
-      document.createElement(
-        "button"
-      );
-
-
-    send.id =
-      "navi-v2-send";
-
-
-    send.type =
-      "button";
-
-
-    send.setAttribute(
-      "aria-label",
-      "Send message"
-    );
-
-
-    send.textContent =
-      "➤";
-
-
-    inputArea.appendChild(
-      input
-    );
-
-
-    inputArea.appendChild(
-      send
-    );
-
-
-    /* =======================================================
-       BUILD CHAT
-       ======================================================= */
-
-    chat.appendChild(
-      header
-    );
-
-
-    chat.appendChild(
-      messages
-    );
-
-
-    chat.appendChild(
-      quickActions
-    );
-
-
-    chat.appendChild(
-      inputArea
-    );
-
-
-    /* =======================================================
-       BUILD ROOT
-       ======================================================= */
-
-    root.appendChild(
-      character
-    );
-
-
-    root.appendChild(
-      chat
-    );
-
-
-    document.body.appendChild(
-      root
-    );
-
-
-    /* =======================================================
-       SAVE REFERENCES
-       ======================================================= */
-
-    STATE.elements.root =
-      root;
-
-
-    STATE.elements.character =
-      character;
-
-
-    STATE.elements.chat =
-      chat;
-
-
-    STATE.elements.header =
-      header;
-
-
-    STATE.elements.headerAvatar =
-      headerAvatar;
-
-
-    STATE.elements.close =
-      close;
-
-
-    STATE.elements.messages =
-      messages;
-
-
-    STATE.elements.quickActions =
-      quickActions;
-
-
-    STATE.elements.input =
-      input;
-
-
-    STATE.elements.send =
-      send;
-
-
-    /* =======================================================
-       APPLY SAVED POSITION
-       ======================================================= */
-
-    applySavedPosition();
-
-  }
+    }
+  );
 
 
   /* =========================================================
-     APPLY SAVED CHARACTER POSITION
+     MAIN NA'VI IMAGE
      ========================================================= */
 
-  function applySavedPosition() {
-
-    const saved =
-      loadSavedPosition();
-
-
-    const character =
-      STATE.elements.character;
+  const mainNavi =
+    document.createElement(
+      "img"
+    );
 
 
-    if (
-      !character ||
-      !saved
-    ) {
+  mainNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image;
 
-      return;
+
+  mainNavi.alt =
+    "Na’Vi — CONTROL Companion";
+
+
+  mainNavi.draggable =
+    false;
+
+
+  mainNavi.loading =
+    "eager";
+
+
+  mainNavi.decoding =
+    "async";
+
+
+  Object.assign(
+    mainNavi.style,
+    {
+
+      width:
+        CONFIG.characterWidth +
+        "px",
+
+      height:
+        "auto",
+
+      maxWidth:
+        "100%",
+
+      display:
+        "block",
+
+      userSelect:
+        "none",
+
+      WebkitUserDrag:
+        "none",
+
+      pointerEvents:
+        "none"
 
     }
+  );
 
 
-    /*
-     * Clamp the saved position to the current viewport.
-     */
-
-    const maxLeft =
-      Math.max(
-
-        0,
-
-        window.innerWidth -
-        character.offsetWidth
-
-      );
-
-
-    const maxTop =
-      Math.max(
-
-        0,
-
-        window.innerHeight -
-        character.offsetHeight
-
-      );
-
-
-    const left =
-      Math.min(
-
-        Math.max(
-          0,
-          saved.left
-        ),
-
-        maxLeft
-
-      );
-
-
-    const top =
-      Math.min(
-
-        Math.max(
-          0,
-          saved.top
-        ),
-
-        maxTop
-
-      );
-
-
-    character.style.left =
-      `${left}px`;
-
-
-    character.style.top =
-      `${top}px`;
-
-
-    character.style.right =
-      "auto";
-
-
-    character.style.bottom =
-      "auto";
-
-
-    STATE.position = {
-
-      left,
-      top
-
-    };
-
-  }
+  naviButton.appendChild(
+    mainNavi
+  );
 
 
   /* =========================================================
-     DEFAULT CHARACTER POSITION
+     CHAT WINDOW
+
+     The original Na'Vi interface is intentionally retained.
+
+     It is fixed to the browser viewport and independent
+     from Na'Vi's character position.
      ========================================================= */
 
-  function applyDefaultCharacterPosition() {
+  const chat =
+    document.createElement(
+      "section"
+    );
 
-    const character =
-      STATE.elements.character;
+
+  chat.id =
+    "navi-chat";
 
 
-    if (!character) {
+  chat.setAttribute(
+    "aria-label",
+    "Chat with Na’Vi"
+  );
 
-      return;
+
+  Object.assign(
+    chat.style,
+    {
+
+      display:
+        "none",
+
+      position:
+        "fixed",
+
+      right:
+        CONFIG.chatRight +
+        "px",
+
+      bottom:
+        CONFIG.chatBottom +
+        "px",
+
+      width:
+        CONFIG.chatWidth +
+        "px",
+
+      maxWidth:
+        "calc(100vw - 30px)",
+
+      height:
+        CONFIG.chatHeight +
+        "px",
+
+      maxHeight:
+        "calc(100vh - 40px)",
+
+      background:
+        "#ffffff",
+
+      border:
+        "1px solid #dfe7dc",
+
+      borderRadius:
+        "20px",
+
+      boxShadow:
+        "0 16px 50px rgba(0,0,0,0.18)",
+
+      overflow:
+        "hidden",
+
+      zIndex:
+        "2147483000",
+
+      boxSizing:
+        "border-box",
+
+      flexDirection:
+        "column"
+
+    }
+  );
+
+
+  /* =========================================================
+     CHAT HEADER
+     ========================================================= */
+
+  const header =
+    document.createElement(
+      "header"
+    );
+
+
+  Object.assign(
+    header.style,
+    {
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "space-between",
+
+      padding:
+        "15px 17px",
+
+      background:
+        "#ffffff",
+
+      borderBottom:
+        "1px solid #edf1eb",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  const headerIdentity =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    headerIdentity.style,
+    {
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      gap:
+        "10px",
+
+      minWidth:
+        "0"
+
+    }
+  );
+
+
+  const headerNavi =
+    document.createElement(
+      "img"
+    );
+
+
+  headerNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image;
+
+
+  headerNavi.alt =
+    "";
+
+
+  Object.assign(
+    headerNavi.style,
+    {
+
+      width:
+        "38px",
+
+      height:
+        "38px",
+
+      objectFit:
+        "contain",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  const headerText =
+    document.createElement(
+      "div"
+    );
+
+
+  const title =
+    document.createElement(
+      "div"
+    );
+
+
+  title.textContent =
+    "Na’Vi";
+
+
+  Object.assign(
+    title.style,
+    {
+
+      fontSize:
+        "17px",
+
+      fontWeight:
+        "700",
+
+      color:
+        "#245c3a",
+
+      lineHeight:
+        "1.2"
+
+    }
+  );
+
+
+  const subtitle =
+    document.createElement(
+      "div"
+    );
+
+
+  subtitle.textContent =
+    "Your CONTROL Companion";
+
+
+  Object.assign(
+    subtitle.style,
+    {
+
+      marginTop:
+        "3px",
+
+      fontSize:
+        "12px",
+
+      color:
+        "#737a73",
+
+      lineHeight:
+        "1.3"
+
+    }
+  );
+
+
+  headerText.appendChild(
+    title
+  );
+
+
+  headerText.appendChild(
+    subtitle
+  );
+
+
+  headerIdentity.appendChild(
+    headerNavi
+  );
+
+
+  headerIdentity.appendChild(
+    headerText
+  );
+
+
+  /* =========================================================
+     CLOSE BUTTON
+     ========================================================= */
+
+  const closeButton =
+    document.createElement(
+      "button"
+    );
+
+
+  closeButton.type =
+    "button";
+
+
+  closeButton.textContent =
+    "×";
+
+
+  closeButton.setAttribute(
+    "aria-label",
+    "Close Na’Vi"
+  );
+
+
+  Object.assign(
+    closeButton.style,
+    {
+
+      width:
+        "36px",
+
+      height:
+        "36px",
+
+      border:
+        "0",
+
+      borderRadius:
+        "50%",
+
+      background:
+        "transparent",
+
+      color:
+        "#555b55",
+
+      fontSize:
+        "26px",
+
+      lineHeight:
+        "36px",
+
+      textAlign:
+        "center",
+
+      cursor:
+        "pointer",
+
+      padding:
+        "0",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  header.appendChild(
+    headerIdentity
+  );
+
+
+  header.appendChild(
+    closeButton
+  );
+
+
+  /* =========================================================
+     CHAT BODY
+     ========================================================= */
+
+  const body =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    body.style,
+    {
+
+      flex:
+        "1",
+
+      overflowY:
+        "auto",
+
+      padding:
+        "20px",
+
+      background:
+        "#fbfcfa",
+
+      boxSizing:
+        "border-box"
+
+    }
+  );
+
+
+  /* =========================================================
+     WELCOME MESSAGE
+     ========================================================= */
+
+  const welcomeRow =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    welcomeRow.style,
+    {
+
+      display:
+        "flex",
+
+      alignItems:
+        "flex-start",
+
+      gap:
+        "10px",
+
+      marginBottom:
+        "18px"
+
+    }
+  );
+
+
+  const welcomeNavi =
+    document.createElement(
+      "img"
+    );
+
+
+  welcomeNavi.src =
+    NAVI_STATES[
+      activeState
+    ].image;
+
+
+  welcomeNavi.alt =
+    "";
+
+
+  Object.assign(
+    welcomeNavi.style,
+    {
+
+      width:
+        "42px",
+
+      height:
+        "42px",
+
+      objectFit:
+        "contain",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  const welcomeBubble =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    welcomeBubble.style,
+    {
+
+      background:
+        "#ffffff",
+
+      border:
+        "1px solid #e5eae3",
+
+      borderRadius:
+        "15px",
+
+      padding:
+        "13px 15px",
+
+      color:
+        "#303530",
+
+      fontSize:
+        "13px",
+
+      lineHeight:
+        "1.55",
+
+      boxShadow:
+        "0 2px 8px rgba(0,0,0,0.04)"
+
+    }
+  );
+
+
+  const welcomeTitle =
+    document.createElement(
+      "strong"
+    );
+
+
+  welcomeTitle.textContent =
+    "Hi, I’m Na’Vi.";
+
+
+  Object.assign(
+    welcomeTitle.style,
+    {
+
+      display:
+        "block",
+
+      marginBottom:
+        "5px",
+
+      color:
+        "#245c3a",
+
+      fontSize:
+        "14px"
+
+    }
+  );
+
+
+  const welcomeText =
+    document.createElement(
+      "div"
+    );
+
+
+  welcomeText.textContent =
+    "I’m here to help you move through your CONTROL learning journey with clarity, confidence and control.";
+
+
+  welcomeBubble.appendChild(
+    welcomeTitle
+  );
+
+
+  welcomeBubble.appendChild(
+    welcomeText
+  );
+
+
+  welcomeRow.appendChild(
+    welcomeNavi
+  );
+
+
+  welcomeRow.appendChild(
+    welcomeBubble
+  );
+
+
+  body.appendChild(
+    welcomeRow
+  );
+
+
+  /* =========================================================
+     QUICK ACTION INTRODUCTION
+     ========================================================= */
+
+  const quickIntro =
+    document.createElement(
+      "div"
+    );
+
+
+  quickIntro.textContent =
+    "What would you like help with?";
+
+
+  Object.assign(
+    quickIntro.style,
+    {
+
+      margin:
+        "0 0 11px 52px",
+
+      fontSize:
+        "13px",
+
+      fontWeight:
+        "600",
+
+      color:
+        "#343934"
+
+    }
+  );
+
+
+  body.appendChild(
+    quickIntro
+  );
+
+
+  /* =========================================================
+     QUICK ACTIONS
+     ========================================================= */
+
+  const quickActions =
+    document.createElement(
+      "div"
+    );
+
+
+  Object.assign(
+    quickActions.style,
+    {
+
+      display:
+        "flex",
+
+      flexWrap:
+        "wrap",
+
+      gap:
+        "8px",
+
+      margin:
+        "0 0 22px 52px"
+
+    }
+  );
+
+
+  const quickOptions = [
+
+    {
+      label:
+        "I’m overwhelmed",
+
+      prompt:
+        "I’m feeling overwhelmed and need help knowing where to start."
+
+    },
+
+    {
+      label:
+        "My next step",
+
+      prompt:
+        "Help me identify my next step."
+
+    },
+
+    {
+      label:
+        "Navigate my course",
+
+      prompt:
+        "Help me understand where I am in my CONTROL learning journey."
+
+    },
+
+    {
+      label:
+        "Reflect",
+
+      prompt:
+        "Help me reflect on what I’m learning."
 
     }
 
+  ];
 
-    /*
-     * If a saved position exists, do not overwrite it.
-     */
 
-    if (
-      STATE.position
+  quickOptions.forEach(
+    function (
+      option
     ) {
 
-      return;
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.type =
+        "button";
+
+
+      button.textContent =
+        option.label;
+
+
+      Object.assign(
+        button.style,
+        {
+
+          border:
+            "1px solid #d7e0d3",
+
+          borderRadius:
+            "18px",
+
+          background:
+            "#ffffff",
+
+          color:
+            "#31563e",
+
+          padding:
+            "8px 12px",
+
+          fontSize:
+            "12px",
+
+          fontWeight:
+            "500",
+
+          cursor:
+            "pointer"
+
+        }
+      );
+
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          submitUserMessage(
+            option.prompt
+          );
+
+        }
+      );
+
+
+      quickActions.appendChild(
+        button
+      );
 
     }
+  );
 
 
-    character.style.right =
-      "20px";
+  body.appendChild(
+    quickActions
+  );
 
 
-    character.style.bottom =
-      "20px";
+  /* =========================================================
+     MESSAGE AREA
+     ========================================================= */
+
+  const messages =
+    document.createElement(
+      "div"
+    );
 
 
-    character.style.left =
-      "auto";
+  messages.id =
+    "navi-messages";
 
 
-    character.style.top =
-      "auto";
+  body.appendChild(
+    messages
+  );
 
-  }
+
+  /* =========================================================
+     INPUT AREA
+     ========================================================= */
+
+  const inputArea =
+    document.createElement(
+      "div"
+    );
 
 
-    /* =========================================================
+  Object.assign(
+    inputArea.style,
+    {
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      gap:
+        "8px",
+
+      padding:
+        "11px",
+
+      background:
+        "#ffffff",
+
+      borderTop:
+        "1px solid #edf1eb",
+
+      flexShrink:
+        "0",
+
+      boxSizing:
+        "border-box"
+
+    }
+  );
+
+
+  const input =
+    document.createElement(
+      "input"
+    );
+
+
+  input.type =
+    "text";
+
+
+  input.placeholder =
+    "Ask Na’Vi...";
+
+
+  input.setAttribute(
+    "aria-label",
+    "Message Na’Vi"
+  );
+
+
+  Object.assign(
+    input.style,
+    {
+
+      flex:
+        "1",
+
+      minWidth:
+        "0",
+
+      height:
+        "44px",
+
+      border:
+        "1px solid #d8dfd6",
+
+      borderRadius:
+        "13px",
+
+      padding:
+        "0 13px",
+
+      fontSize:
+        "13px",
+
+      color:
+        "#303530",
+
+      background:
+        "#ffffff",
+
+      outline:
+        "none",
+
+      boxSizing:
+        "border-box"
+
+    }
+  );
+
+
+  const sendButton =
+    document.createElement(
+      "button"
+    );
+
+
+  sendButton.type =
+    "button";
+
+
+  sendButton.setAttribute(
+    "aria-label",
+    "Send message"
+  );
+
+
+  sendButton.textContent =
+    "➤";
+
+
+  Object.assign(
+    sendButton.style,
+    {
+
+      width:
+        "44px",
+
+      height:
+        "44px",
+
+      border:
+        "0",
+
+      borderRadius:
+        "50%",
+
+      background:
+        "#176b3a",
+
+      color:
+        "#ffffff",
+
+      fontSize:
+        "18px",
+
+      cursor:
+        "pointer",
+
+      flexShrink:
+        "0",
+
+      display:
+        "flex",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center"
+
+    }
+  );
+
+
+  inputArea.appendChild(
+    input
+  );
+
+
+  inputArea.appendChild(
+    sendButton
+  );
+
+
+  /* =========================================================
+     FOOTER
+     ========================================================= */
+
+  const footer =
+    document.createElement(
+      "div"
+    );
+
+
+  footer.textContent =
+    "Na’Vi helps you navigate your learning journey.";
+
+
+  Object.assign(
+    footer.style,
+    {
+
+      padding:
+        "7px 12px",
+
+      background:
+        "#ffffff",
+
+      color:
+        "#777d77",
+
+      fontSize:
+        "10px",
+
+      textAlign:
+        "center",
+
+      lineHeight:
+        "1.3",
+
+      flexShrink:
+        "0"
+
+    }
+  );
+
+
+  /* =========================================================
+     ASSEMBLE CHAT
+     ========================================================= */
+
+  chat.appendChild(
+    header
+  );
+
+
+  chat.appendChild(
+    body
+  );
+
+
+  chat.appendChild(
+    inputArea
+  );
+
+
+  chat.appendChild(
+    footer
+  );
+
+
+  /* =========================================================
      CHAT OPEN / CLOSE
      ========================================================= */
 
   function openChat() {
 
-    const chat =
-      STATE.elements.chat;
-
-
-    if (!chat) {
+    if (
+      chatOpen
+    ) {
 
       return;
 
     }
 
 
-    STATE.open =
+    chatOpen =
       true;
 
 
-    chat.classList.add(
-      "navi-open"
-    );
+    chat.style.display =
+      "flex";
 
 
-    setTimeout(
-      function () {
-
-        const input =
-          STATE.elements.input;
-
-
-        if (input) {
-
-          input.focus();
-
-        }
-
-      },
-      100
-    );
+    input.focus();
 
   }
 
 
   function closeChat() {
 
-    const chat =
-      STATE.elements.chat;
-
-
-    if (!chat) {
+    if (
+      !chatOpen
+    ) {
 
       return;
 
     }
 
 
-    STATE.open =
+    chatOpen =
       false;
 
 
-    chat.classList.remove(
-      "navi-open"
-    );
+    chat.style.display =
+      "none";
 
   }
+    function toggleChat() {
 
-
-  function toggleChat() {
-
-    if (
-      STATE.open
-    ) {
+    if (chatOpen) {
 
       closeChat();
 
@@ -3304,1604 +2152,271 @@
 
 
   /* =========================================================
-     VISUAL STATE
+     NA'VI CLICK / DRAG SYSTEM
+
+     QUICK CLICK:
+       Toggle chat.
+
+     DRAG:
+       Move Na'Vi.
+
+     Works with mouse and touch through Pointer Events.
      ========================================================= */
 
-  function setVisualState(
-    requestedState
-  ) {
+  let pointerActive =
+    false;
 
-    if (
-      typeof requestedState !==
-      "string"
-    ) {
+  let pointerMoved =
+    false;
 
-      return;
+  let pointerStartX =
+    0;
 
-    }
+  let pointerStartY =
+    0;
 
+  let originalLeft =
+    0;
 
-    const alias =
-      STATE_ALIASES[
-        requestedState
-      ] || requestedState;
+  let originalTop =
+    0;
 
+  let dragOffsetX =
+    0;
 
-    const state =
-      NAVI_STATES[
-        alias
-      ];
+  let dragOffsetY =
+    0;
 
 
-    if (!state) {
-
-      return;
-
-    }
-
-
-    const character =
-      STATE.elements.character;
-
-
-    const headerAvatar =
-      STATE.elements.headerAvatar;
-
-
-    if (character) {
-
-      character.src =
-        state.image;
-
-    }
-
-
-    if (headerAvatar) {
-
-      headerAvatar.src =
-        state.image;
-
-    }
-
-
-    STATE.activeVisualState =
-      alias;
-
-  }
-
-
-  /* =========================================================
-     TYPING INDICATOR
-     ========================================================= */
-
-  function showTyping() {
-
-    const messages =
-      STATE.elements.messages;
-
-
-    if (!messages) {
-
-      return;
-
-    }
-
-
-    removeTyping();
-
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.id =
-      "navi-v2-typing-row";
-
-
-    row.className =
-      "navi-v2-message-row navi-assistant";
-
-
-    const typing =
-      document.createElement(
-        "div"
-      );
-
-
-    typing.className =
-      "navi-v2-typing";
-
-
-    const dot1 =
-      document.createElement(
-        "span"
-      );
-
-
-    const dot2 =
-      document.createElement(
-        "span"
-      );
-
-
-    const dot3 =
-      document.createElement(
-        "span"
-      );
-
-
-    typing.appendChild(
-      dot1
-    );
-
-
-    typing.appendChild(
-      dot2
-    );
-
-
-    typing.appendChild(
-      dot3
-    );
-
-
-    row.appendChild(
-      typing
-    );
-
-
-    messages.appendChild(
-      row
-    );
-
-
-    scrollMessagesToBottom();
-
-  }
-
-
-  function removeTyping() {
-
-    const typing =
-      document.getElementById(
-        "navi-v2-typing-row"
-      );
-
-
-    if (typing) {
-
-      typing.remove();
-
-    }
-
-  }
-
-
-  /* =========================================================
-     MESSAGE SCROLL
-     ========================================================= */
-
-  function scrollMessagesToBottom() {
-
-    const messages =
-      STATE.elements.messages;
-
-
-    if (!messages) {
-
-      return;
-
-    }
-
-
-    requestAnimationFrame(
-      function () {
-
-        messages.scrollTop =
-          messages.scrollHeight;
-
-      }
-    );
-
-  }
-
-
-  /* =========================================================
-     NORMALIZE BRAIN RESPONSE
-     =========================================================
-
-     Brain V2 returns:
-
-       {
-         ok: true,
-         response: {
-           reply: "...",
-           state: "...",
-           links: [...]
-         }
-       }
-
-     The Frontend does not interpret the content.
-
-     It only normalizes the structure so the interface
-     can display it.
-     ========================================================= */
-
-  function normalizeBrainResponse(
-    data
-  ) {
-
-    if (
-      !data ||
-      typeof data !==
-      "object"
-    ) {
-
-      return {
-
-        reply:
-          "",
-
-        state:
-          "friendlyWave",
-
-        links:
-          []
-
-      };
-
-    }
-
-
-    const response =
-      data.response &&
-      typeof data.response ===
-        "object"
-
-        ? data.response
-
-        : data;
-
-
-    const reply =
-      typeof response.reply ===
-      "string"
-
-        ? response.reply.trim()
-
-        : "";
-
-
-    const state =
-      typeof response.state ===
-      "string"
-
-        ? response.state
-
-        : "friendlyWave";
-
-
-    const links =
-      Array.isArray(
-        response.links
-      )
-
-        ? response.links
-
-        : [];
-
-
-    return {
-
-      reply,
-
-      state,
-
-      links
-
-    };
-
-  }
-
-
-  /* =========================================================
-     RENDER BRAIN REPLY
-     =========================================================
-
-     IMPORTANT:
-
-     The Brain returns reply text separately from structured
-     navigation targets.
-
-     We do NOT accept arbitrary HTML.
-
-     We do NOT parse arbitrary Markdown links.
-
-     Only links that have passed through the approved
-     navigation registry are made clickable.
-     ========================================================= */
-
-    /* =========================================================
-     RENDER BRAIN REPLY
-     =========================================================
-
-     IMPORTANT:
-
-     The Brain returns reply text separately from structured
-     navigation targets.
-
-     We do NOT accept arbitrary HTML.
-
-     We do NOT parse arbitrary Markdown links.
-
-     Only links that have passed through the approved
-     navigation registry are made clickable.
-
-     Reply text is inserted as text nodes so characters such
-     as &, < and > are displayed correctly and safely.
-     ========================================================= */
-
-  function renderBrainReply(
-    reply,
-    approvedLinks
-  ) {
-
-    const wrapper =
-      document.createElement(
-        "div"
-      );
-
-
-    wrapper.className =
-      "navi-v2-message";
-
-
-    const fallbackReply =
-      reply ||
-      "I’m here with you. What would you like help with?";
-
-
-    /* -------------------------------------------------------
-       NO APPROVED LINKS
-
-       Keep the entire reply as plain text.
-       ------------------------------------------------------- */
-
-    if (
-      !approvedLinks ||
-      !approvedLinks.length
-    ) {
-
-      wrapper.textContent =
-        fallbackReply;
-
-      return wrapper;
-
-    }
-
-
-    /* -------------------------------------------------------
-       APPROVED LINKS EXIST
-
-       Keep the reply as text.
-
-       We split the reply around the exact approved link
-       labels and create only those labels as safe anchors.
-       ------------------------------------------------------- */
-
-    let remaining =
-      String(
-        fallbackReply
-      );
-
-
-    const fragments =
-      [];
-
-
-    const sortedLinks =
-      [...approvedLinks]
-        .sort(
-          function (
-            a,
-            b
-          ) {
-
-            return (
-              b.text.length -
-              a.text.length
-            );
-
-          }
-        );
-
-
-    while (
-      remaining.length
-    ) {
-
-      let best =
-        null;
-
-
-      let bestIndex =
-        -1;
-
-
-      /* -----------------------------------------------------
-         Find the next approved link label.
-         ----------------------------------------------------- */
-
-      for (
-        const link of sortedLinks
-      ) {
-
-        const index =
-          remaining.indexOf(
-            link.text
-          );
-
-
-        if (
-          index ===
-          -1
-        ) {
-
-          continue;
-
-        }
-
-
-        if (
-          bestIndex ===
-            -1 ||
-          index <
-            bestIndex
-        ) {
-
-          best =
-            link;
-
-          bestIndex =
-            index;
-
-        }
-
-      }
-
-
-      /* -----------------------------------------------------
-         No more approved links.
-
-         Everything remaining becomes a normal text node.
-         ----------------------------------------------------- */
-
-      if (!best) {
-
-        fragments.push(
-
-          document.createTextNode(
-            remaining
-          )
-
-        );
-
-
-        remaining =
-          "";
-
-        break;
-
-      }
-
-
-      /* -----------------------------------------------------
-         Text before the approved link.
-         ----------------------------------------------------- */
-
-      if (
-        bestIndex >
-        0
-      ) {
-
-        fragments.push(
-
-          document.createTextNode(
-
-            remaining.slice(
-              0,
-              bestIndex
-            )
-
-          )
-
-        );
-
-      }
-
-
-      /* -----------------------------------------------------
-         Approved navigation link.
-         ----------------------------------------------------- */
-
-      const linkElement =
-        createNavigationLink(
-          best
-        );
-
-
-      fragments.push(
-        linkElement
-      );
-
-
-      /* -----------------------------------------------------
-         Remove the link text from the remaining text.
-         ----------------------------------------------------- */
-
-      remaining =
-        remaining.slice(
-
-          bestIndex +
-          best.text.length
-
-        );
-
-    }
-
-
-    /* -------------------------------------------------------
-       Append all fragments to the message.
-
-       Text is inserted with createTextNode.
-       Links are the only HTML elements created.
-       ------------------------------------------------------- */
-
-    for (
-      const fragment of fragments
-    ) {
-
-      wrapper.appendChild(
-        fragment
-      );
-
-    }
-
-
-    return wrapper;
-
-  }
-
-
-  
-
-
-  /* =========================================================
-     ADD ASSISTANT MESSAGE
-     ========================================================= */
-
-  function addAssistantMessage(
-    reply,
-    links
-  ) {
-
-    const messages =
-      STATE.elements.messages;
-
-
-    if (!messages) {
-
-      return;
-
-    }
-
-
-    removeTyping();
-
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.className =
-      "navi-v2-message-row navi-assistant";
-
-
-    const approvedLinks =
-      buildApprovedLinks(
-        links || []
-      );
-
-
-    const message =
-      renderBrainReply(
-
-        reply,
-
-        approvedLinks
-
-      );
-
-
-    row.appendChild(
-      message
-    );
-
-
-    messages.appendChild(
-      row
-    );
-
-
-    STATE.messages.push({
-
-      role:
-        "assistant",
-
-      content:
-        reply || "",
-
-      links:
-        approvedLinks
-
-    });
-
-
-    scrollMessagesToBottom();
-
-  }
-
-
-  /* =========================================================
-     ADD USER MESSAGE
-     ========================================================= */
-
-  function addUserMessage(
-    text
-  ) {
-
-    const messages =
-      STATE.elements.messages;
-
-
-    if (!messages) {
-
-      return;
-
-    }
-
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.className =
-      "navi-v2-message-row navi-user";
-
-
-    const message =
-      document.createElement(
-        "div"
-      );
-
-
-    message.className =
-      "navi-v2-message";
-
-
-    /*
-     * textContent is intentional.
-
-     * Learner text must never become HTML.
-     */
-
-    message.textContent =
-      text;
-
-
-    row.appendChild(
-      message
-    );
-
-
-    messages.appendChild(
-      row
-    );
-
-
-    STATE.messages.push({
-
-      role:
-        "user",
-
-      content:
-        text
-
-    });
-
-
-    scrollMessagesToBottom();
-
-  }
-
-
-  /* =========================================================
-     QUICK ACTIONS
-     ========================================================= */
-
-  function setQuickActions(
-    actions
-  ) {
-
-    const container =
-      STATE.elements.quickActions;
-
-
-    if (!container) {
-
-      return;
-
-    }
-
-
-    container.innerHTML =
-      "";
-
-
-    if (
-      !Array.isArray(actions)
-    ) {
-
-      return;
-
-    }
-
-
-    for (
-      const action of actions
-    ) {
-
-      if (
-        typeof action !==
-        "string"
-      ) {
-
-        continue;
-
-      }
-
-
-      const clean =
-        action.trim();
-
-
-      if (!clean) {
-
-        continue;
-
-      }
-
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-
-      button.type =
-        "button";
-
-
-      button.className =
-        "navi-v2-quick-action";
-
-
-      button.textContent =
-        clean;
-
-
-      button.addEventListener(
-
-        "click",
-
-        function () {
-
-          sendMessage(
-            clean
-          );
-
-        }
-
-      );
-
-
-      container.appendChild(
-        button
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     DEFAULT QUICK ACTIONS
-     ========================================================= */
-
-  function setDefaultQuickActions() {
-
-    setQuickActions([
-
-      "Where should I start?",
-
-      "What should I do next?",
-
-      "I'm feeling overwhelmed."
-
-    ]);
-
-  }
-
-
-  /* =========================================================
-     BUILD BRAIN SIGNAL
-     =========================================================
-
-     The learner's actual message is the primary signal.
-
-     Page/context information is supporting interface
-     information only.
-
-     ========================================================= */
-
-  function buildBrainSignal(
-    learnerMessage
-  ) {
-
-    const pageSignal =
-      buildPageSignal();
-
-
-    return {
-
-      protocol:
-        CONFIG.protocol,
-
-      protocolVersion:
-        CONFIG.protocolVersion,
-
-      companion:
-        "Na'Vi",
-
-      framework:
-        "The CONTROL Framework for Digital Program Navigation",
-
-      session: {
-
-        id:
-          STATE.sessionId
-
-      },
-
-      interface: {
-
-        page:
-          pageSignal.page,
-
-        context:
-          pageSignal.context,
-
-        title:
-          pageSignal.title,
-
-        path:
-          pageSignal.path,
-
-        activeState:
-          STATE.currentActiveState
-
-      },
-
-      learner: {
-
-        message:
-          learnerMessage
-
-      }
-
-    };
-
-  }
-
-
-  /* =========================================================
-     CALL Na'Vi BRAIN
-     ========================================================= */
-
-  async function callBrain(
-    signal
-  ) {
-
-    const response =
-      await fetch(
-
-        CONFIG.apiEndpoint,
-
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify(
-              signal
-            )
-
-        }
-
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      const errorText =
-        await response
-          .text()
-          .catch(
-            function () {
-
-              return "";
-
-            }
-          );
-
-
-      throw new Error(
-
-        "Na'Vi Brain returned HTTP " +
-        response.status +
-        (
-          errorText
-            ? ": " + errorText
-            : ""
-        )
-
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !data ||
-      data.ok === false
-    ) {
-
-      throw new Error(
-        "Na'Vi Brain returned an unsuccessful response."
-      );
-
-    }
-
-
-    return data;
-
-  }
-
-
-  /* =========================================================
-     SEND BUTTON STATE
-     ========================================================= */
-
-  function setSendDisabled(
-    disabled
-  ) {
-
-    const send =
-      STATE.elements.send;
-
-
-    if (!send) {
-
-      return;
-
-    }
-
-
-    send.disabled =
-      Boolean(
-        disabled
-      );
-
-
-    if (
-      disabled
-    ) {
-
-      send.setAttribute(
-        "aria-busy",
-        "true"
-      );
-
-    } else {
-
-      send.removeAttribute(
-        "aria-busy"
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     SEND MESSAGE
-     ========================================================= */
-
-  async function sendMessage(
-    message
-  ) {
-
-    const cleanMessage =
-      typeof message ===
-      "string"
-
-        ? message.trim()
-
-        : "";
-
-
-    if (
-      !cleanMessage
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-     * Prevent two Brain requests from being submitted
-     * simultaneously.
-     */
-
-    if (
-      STATE.processing
-    ) {
-
-      return;
-
-    }
-
-
-    const input =
-      STATE.elements.input;
-
-
-    /*
-     * Clear the input when the message came from the
-     * text box.
-     */
-
-    if (
-      input &&
-      input.value.trim() ===
-        cleanMessage
-    ) {
-
-      input.value =
-        "";
-
-      resizeInput();
-
-    }
-
-
-    /*
-     * Open the chat automatically if a quick action
-     * triggered the message.
-     */
-
-    if (
-      !STATE.open
-    ) {
-
-      openChat();
-
-    }
-
-
-    addUserMessage(
-      cleanMessage
-    );
-
-
-    STATE.processing =
-      true;
-
-
-    setSendDisabled(
-      true
-    );
-
-
-    setVisualState(
-      "listening"
-    );
-
-
-    showTyping();
-
+  function getStoredPosition() {
 
     try {
 
-      /*
-       * Refresh the page/context signal immediately before
-       * communicating with the Brain.
-       */
-
-      refreshPageSignal();
-
-
-      const signal =
-        buildBrainSignal(
-          cleanMessage
+      const stored =
+        localStorage.getItem(
+          CONFIG.positionStorageKey
         );
 
 
-      const brainResponse =
-        await callBrain(
-          signal
+      if (!stored) {
+        return null;
+      }
+
+
+      const position =
+        JSON.parse(
+          stored
         );
 
 
-      const normalized =
-        normalizeBrainResponse(
-          brainResponse
-        );
+      if (
+        typeof position.left !==
+          "number" ||
+        typeof position.top !==
+          "number"
+      ) {
+
+        return null;
+
+      }
 
 
-      /*
-       * Apply only the visual state supplied by the Brain
-       * if it matches an approved Frontend state.
-       */
+      return position;
 
-      setVisualState(
-        normalized.state
-      );
+    } catch (error) {
 
-
-      /*
-       * Render the Brain's response.
-
-       * Navigation links are independently checked against
-       * the Frontend's approved registry.
-       */
-
-      addAssistantMessage(
-
-        normalized.reply,
-
-        normalized.links
-
-      );
-
-
-    } catch (
-      error
-    ) {
-
-      console.error(
-
-        "Na'Vi Brain communication error:",
-
-        error
-
-      );
-
-
-      removeTyping();
-
-
-      setVisualState(
-        "calm"
-      );
-
-
-      addAssistantMessage(
-
-        "I’m having a little trouble connecting right now. Please try again in a moment."
-
-      );
-
-
-    } finally {
-
-      STATE.processing =
-        false;
-
-
-      setSendDisabled(
-        false
-      );
+      return null;
 
     }
 
   }
 
 
-  /* =========================================================
-     INPUT RESIZE
-     ========================================================= */
+  function savePosition(
+    left,
+    top
+  ) {
 
-  function resizeInput() {
+    try {
 
-    const input =
-      STATE.elements.input;
+      localStorage.setItem(
 
+        CONFIG.positionStorageKey,
 
-    if (!input) {
+        JSON.stringify({
 
-      return;
+          left:
+            left,
+
+          top:
+            top
+
+        })
+
+      );
+
+    } catch (error) {
+
+      /* Storage may be unavailable. */
 
     }
-
-
-    input.style.height =
-      "auto";
-
-
-    const maxHeight =
-      100;
-
-
-    input.style.height =
-      Math.min(
-
-        input.scrollHeight,
-
-        maxHeight
-
-      ) + "px";
 
   }
 
 
-  /* =========================================================
-     SUBMIT INPUT
-     ========================================================= */
+  function clamp(
+    value,
+    min,
+    max
+  ) {
 
-  function submitInput() {
-
-    const input =
-      STATE.elements.input;
-
-
-    if (!input) {
-
-      return;
-
-    }
-
-
-    const value =
-      input.value.trim();
-
-
-    if (!value) {
-
-      return;
-
-    }
-
-
-    input.value =
-      "";
-
-
-    resizeInput();
-
-
-    sendMessage(
-      value
+    return Math.min(
+      Math.max(
+        value,
+        min
+      ),
+      max
     );
 
   }
 
 
-  /* =========================================================
-     INPUT KEYBOARD HANDLING
-     =========================================================
+  function applyStoredPosition() {
 
-     Enter       = Send
-     Shift+Enter = New line
-     ========================================================= */
-
-  function handleInputKeydown(
-    event
-  ) {
-
-    if (
-      event.key ===
-        "Enter" &&
-      !event.shiftKey
-    ) {
-
-      event.preventDefault();
+    const stored =
+      getStoredPosition();
 
 
-      submitInput();
-
-    }
-
-  }
-
-
-    /* =========================================================
-     CHARACTER DRAGGING
-     ========================================================= */
-
-  function beginCharacterDrag(
-    event
-  ) {
-
-    const character =
-      STATE.elements.character;
-
-
-    if (!character) {
-
+    if (!stored) {
       return;
-
-    }
-
-
-    /*
-     * Only allow the primary mouse button when using a mouse.
-     *
-     * Touch and pen input are allowed.
-     */
-
-    if (
-      event.pointerType ===
-        "mouse" &&
-      event.button !==
-        0
-    ) {
-
-      return;
-
     }
 
 
     const rect =
-      character.getBoundingClientRect();
+      naviButton.getBoundingClientRect();
 
-
-    STATE.dragging =
-      true;
-
-
-    STATE.dragMoved =
-      false;
-
-
-    STATE.dragStartX =
-      event.clientX;
-
-
-    STATE.dragStartY =
-      event.clientY;
-
-
-    STATE.startLeft =
-      rect.left;
-
-
-    STATE.startTop =
-      rect.top;
-
-
-    character.classList.add(
-      "navi-dragging"
-    );
-
-
-    /*
-     * Pointer capture keeps the drag attached to Na'Vi even
-     * if the pointer moves outside the image.
-     */
-
-    try {
-
-      character.setPointerCapture(
-        event.pointerId
-      );
-
-    } catch (
-      error
-    ) {
-
-      /*
-       * Pointer capture is optional.
-       */
-
-    }
-
-
-    event.preventDefault();
-
-  }
-
-
-  /* =========================================================
-     MOVE CHARACTER
-     ========================================================= */
-
-  function moveCharacter(
-    event
-  ) {
-
-    if (
-      !STATE.dragging
-    ) {
-
-      return;
-
-    }
-
-
-    const character =
-      STATE.elements.character;
-
-
-    if (!character) {
-
-      return;
-
-    }
-
-
-    const deltaX =
-      event.clientX -
-      STATE.dragStartX;
-
-
-    const deltaY =
-      event.clientY -
-      STATE.dragStartY;
-
-
-    /*
-     * Small pointer movement is treated as a click rather
-     * than a drag.
-     */
-
-    if (
-      Math.abs(deltaX) >
-        CONFIG.dragThreshold ||
-      Math.abs(deltaY) >
-        CONFIG.dragThreshold
-    ) {
-
-      STATE.dragMoved =
-        true;
-
-    }
-
-
-    if (
-      !STATE.dragMoved
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-     * Keep Na'Vi inside the visible browser viewport.
-     */
 
     const maxLeft =
       Math.max(
-
         0,
-
         window.innerWidth -
-        character.offsetWidth
-
+        rect.width
       );
 
 
     const maxTop =
       Math.max(
-
         0,
-
         window.innerHeight -
-        character.offsetHeight
-
+        rect.height
       );
 
 
-    const nextLeft =
-      Math.min(
-
-        Math.max(
-
-          0,
-
-          STATE.startLeft +
-          deltaX
-
-        ),
-
+    const left =
+      clamp(
+        stored.left,
+        0,
         maxLeft
-
       );
 
 
-    const nextTop =
-      Math.min(
-
-        Math.max(
-
-          0,
-
-          STATE.startTop +
-          deltaY
-
-        ),
-
+    const top =
+      clamp(
+        stored.top,
+        0,
         maxTop
-
       );
 
 
-    character.style.left =
-      `${nextLeft}px`;
+    wrapper.style.position =
+      "fixed";
 
 
-    character.style.top =
-      `${nextTop}px`;
+    wrapper.style.left =
+      left + "px";
 
 
-    character.style.right =
+    wrapper.style.top =
+      top + "px";
+
+
+    wrapper.style.width =
       "auto";
 
 
-    character.style.bottom =
-      "auto";
+    wrapper.style.maxWidth =
+      "none";
 
 
-    STATE.position = {
+    wrapper.style.zIndex =
+      "2147482000";
 
-      left:
-        nextLeft,
+  }
 
-      top:
-        nextTop
 
-    };
+  function beginPointerDrag(
+    event
+  ) {
+
+    pointerActive =
+      true;
+
+
+    pointerMoved =
+      false;
+
+
+    pointerStartX =
+      event.clientX;
+
+
+    pointerStartY =
+      event.clientY;
+
+
+    const rect =
+      naviButton.getBoundingClientRect();
+
+
+    originalLeft =
+      rect.left;
+
+
+    originalTop =
+      rect.top;
+
+
+    dragOffsetX =
+      event.clientX -
+      rect.left;
+
+
+    dragOffsetY =
+      event.clientY -
+      rect.top;
+
+
+    naviButton.style.cursor =
+      "grabbing";
+
+
+    if (
+      naviButton.setPointerCapture
+    ) {
+
+      try {
+
+        naviButton.setPointerCapture(
+          event.pointerId
+        );
+
+      } catch (error) {
+
+        /* Pointer capture unavailable. */
+
+      }
+
+    }
 
 
     event.preventDefault();
@@ -4909,118 +2424,185 @@
   }
 
 
-  /* =========================================================
-     END CHARACTER DRAG
-     ========================================================= */
-
-  function endCharacterDrag(
+  function movePointerDrag(
     event
   ) {
 
+    if (!pointerActive) {
+      return;
+    }
+
+
+    const distanceX =
+      Math.abs(
+        event.clientX -
+        pointerStartX
+      );
+
+
+    const distanceY =
+      Math.abs(
+        event.clientY -
+        pointerStartY
+      );
+
+
     if (
-      !STATE.dragging
+      distanceX >
+        CONFIG.dragThreshold ||
+      distanceY >
+        CONFIG.dragThreshold
     ) {
 
-      return;
+      pointerMoved =
+        true;
 
     }
 
 
-    const character =
-      STATE.elements.character;
+    if (!pointerMoved) {
+      return;
+    }
 
 
-    STATE.dragging =
-      false;
+    /*
+       Once dragging begins, switch the wrapper to fixed
+       viewport positioning.
+
+       This allows Na'Vi to move anywhere on screen.
+    */
 
 
-    if (character) {
+    wrapper.style.position =
+      "fixed";
 
-      character.classList.remove(
-        "navi-dragging"
+
+    wrapper.style.width =
+      "auto";
+
+
+    wrapper.style.maxWidth =
+      "none";
+
+
+    wrapper.style.zIndex =
+      "2147482000";
+
+
+    const rect =
+      naviButton.getBoundingClientRect();
+
+
+    const maxLeft =
+      Math.max(
+        0,
+        window.innerWidth -
+        rect.width
       );
 
 
+    const maxTop =
+      Math.max(
+        0,
+        window.innerHeight -
+        rect.height
+      );
+
+
+    const newLeft =
+      clamp(
+        event.clientX -
+          dragOffsetX,
+        0,
+        maxLeft
+      );
+
+
+    const newTop =
+      clamp(
+        event.clientY -
+          dragOffsetY,
+        0,
+        maxTop
+      );
+
+
+    wrapper.style.left =
+      newLeft + "px";
+
+
+    wrapper.style.top =
+      newTop + "px";
+
+
+    event.preventDefault();
+
+  }
+
+
+  function endPointerDrag(
+    event
+  ) {
+
+    if (!pointerActive) {
+      return;
+    }
+
+
+    pointerActive =
+      false;
+
+
+    naviButton.style.cursor =
+      "grab";
+
+
+    if (
+      naviButton.releasePointerCapture
+    ) {
+
       try {
 
-        character.releasePointerCapture(
+        naviButton.releasePointerCapture(
           event.pointerId
         );
 
-      } catch (
-        error
-      ) {
+      } catch (error) {
 
-        /*
-         * Pointer capture may already have been released.
-         */
+        /* Pointer capture unavailable. */
 
       }
 
     }
 
 
-    /*
-     * Save the new position only after an actual drag.
-     */
+    if (pointerMoved) {
 
-    if (
-      STATE.dragMoved &&
-      STATE.position
-    ) {
+      const rect =
+        naviButton.getBoundingClientRect();
+
 
       savePosition(
-
-        STATE.position.left,
-
-        STATE.position.top
-
+        rect.left,
+        rect.top
       );
 
-    }
 
+      /*
+         Prevent the drag release from also triggering
+         a normal click.
+      */
 
-    /*
-     * Prevent the pointer release from immediately being
-     * interpreted as a character click.
-     */
+      setTimeout(
+        function () {
 
-    setTimeout(
+          pointerMoved =
+            false;
 
-      function () {
+        },
+        0
+      );
 
-        STATE.dragMoved =
-          false;
-
-      },
-
-      0
-
-    );
-
-  }
-
-
-  /* =========================================================
-     CHARACTER CLICK
-     ========================================================= */
-
-  function handleCharacterClick(
-    event
-  ) {
-
-    /*
-     * If the learner dragged Na'Vi, do not open the chat
-     * when the pointer is released.
-     */
-
-    if (
-      STATE.dragMoved
-    ) {
-
-      event.preventDefault();
-
-      event.stopPropagation();
 
       return;
 
@@ -5032,29 +2614,796 @@
   }
 
 
+  naviButton.addEventListener(
+    "pointerdown",
+    beginPointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointermove",
+    movePointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointerup",
+    endPointerDrag
+  );
+
+
+  naviButton.addEventListener(
+    "pointercancel",
+    function () {
+
+      pointerActive =
+        false;
+
+      pointerMoved =
+        false;
+
+      naviButton.style.cursor =
+        "grab";
+
+    }
+  );
+
+
   /* =========================================================
-     CHARACTER KEYBOARD ACCESS
+     CLOSE BUTTON
      ========================================================= */
 
-  function handleCharacterKeydown(
-    event
+  closeButton.addEventListener(
+    "click",
+    function () {
+
+      closeChat();
+
+    }
+  );
+
+
+  /* =========================================================
+     LEARNER MESSAGE
+     ========================================================= */
+
+  function addLearnerMessage(
+    text
   ) {
 
-    /*
-     * Enter and Space both open/toggle Na'Vi.
-     */
+    const row =
+      document.createElement(
+        "div"
+      );
 
-    if (
-      event.key ===
-        "Enter" ||
-      event.key ===
-        " "
+
+    Object.assign(
+      row.style,
+      {
+
+        display:
+          "flex",
+
+        justifyContent:
+          "flex-end",
+
+        marginBottom:
+          "12px",
+
+        paddingLeft:
+          "45px"
+
+      }
+    );
+
+
+    const bubble =
+      document.createElement(
+        "div"
+      );
+
+
+    bubble.textContent =
+      text;
+
+
+    Object.assign(
+      bubble.style,
+      {
+
+        background:
+          "#eef5ea",
+
+        border:
+          "1px solid #dce8d8",
+
+        borderRadius:
+          "15px",
+
+        padding:
+          "10px 13px",
+
+        fontSize:
+          "13px",
+
+        lineHeight:
+          "1.5",
+
+        color:
+          "#303530",
+
+        maxWidth:
+          "85%"
+
+      }
+    );
+
+
+    row.appendChild(
+      bubble
+    );
+
+
+    messages.appendChild(
+      row
+    );
+
+
+    body.scrollTop =
+      body.scrollHeight;
+
+  }
+
+
+  /* =========================================================
+     NA'VI MESSAGE
+     ========================================================= */
+
+  function renderNaviMessage(
+    text,
+    approvedLinks
+  ) {
+
+    const fragment =
+      document.createDocumentFragment();
+
+    const normalized =
+      String(text || "")
+        .replace(/\s+(?=\d+\.\s)/g, "\n");
+
+    const lines =
+      normalized.split(/\r?\n/);
+
+    let list = null;
+
+    lines.forEach(
+      function (line) {
+
+        const trimmed =
+          line.trim();
+
+        if (!trimmed) {
+          list = null;
+          return;
+        }
+
+        const match =
+          trimmed.match(/^(\d+)\.\s+(.*)$/);
+
+        if (match) {
+
+          if (!list) {
+
+            list =
+              document.createElement(
+                "ol"
+              );
+
+            list.style.margin =
+              "6px 0 0 20px";
+
+            list.style.padding =
+              "0";
+
+            fragment.appendChild(
+              list
+            );
+
+          }
+
+          const item =
+            document.createElement(
+              "li"
+            );
+
+          item.style.marginBottom =
+            "5px";
+
+          appendNaviInlineMarkdown(
+            item,
+            match[2],
+            approvedLinks
+          );
+
+          list.appendChild(
+            item
+          );
+
+          return;
+        }
+
+        list = null;
+
+        const paragraph =
+          document.createElement(
+            "div"
+          );
+
+        paragraph.style.marginBottom =
+          "6px";
+
+        appendNaviInlineMarkdown(
+          paragraph,
+          trimmed,
+          approvedLinks
+        );
+
+        fragment.appendChild(
+          paragraph
+        );
+
+      }
+    );
+
+    return fragment;
+
+  }
+
+
+  function appendNaviInlineMarkdown(
+    element,
+    text,
+    approvedLinks
+  ) {
+
+    const value = String(text || "");
+    const links = Array.isArray(approvedLinks) ? approvedLinks : [];
+
+    const sortedLinks =
+      links.slice().sort(function (a, b) {
+        return b.text.length - a.text.length;
+      });
+
+    const boldPattern = /\*\*([\s\S]+?)\*\*/g;
+    let lastIndex = 0;
+    let match;
+
+
+    function appendPlainText(parent, plainText) {
+
+      let remaining =
+        String(plainText || "");
+
+
+      while (remaining.length) {
+
+        let best = null;
+        let bestIndex = -1;
+
+
+        sortedLinks.forEach(function (link) {
+
+          const index =
+            remaining.indexOf(
+              link.text
+            );
+
+
+          if (
+            index !== -1 &&
+            (
+              bestIndex === -1 ||
+              index < bestIndex ||
+              (
+                index === bestIndex &&
+                link.text.length >
+                  best.text.length
+              )
+            )
+          ) {
+
+            best =
+              link;
+
+            bestIndex =
+              index;
+
+          }
+
+        });
+
+
+        if (!best) {
+
+          parent.appendChild(
+            document.createTextNode(
+              remaining
+            )
+          );
+
+          return;
+
+        }
+
+
+        if (bestIndex > 0) {
+
+          parent.appendChild(
+            document.createTextNode(
+              remaining.slice(
+                0,
+                bestIndex
+              )
+            )
+          );
+
+        }
+
+
+        parent.appendChild(
+          createNavigationLink(
+            best.text,
+            best.target
+          )
+        );
+
+
+        remaining =
+          remaining.slice(
+            bestIndex +
+              best.text.length
+          );
+
+      }
+
+    }
+
+
+    while (
+      (match =
+        boldPattern.exec(value))
     ) {
 
-      event.preventDefault();
+      if (match.index > lastIndex) {
+
+        appendPlainText(
+          element,
+          value.slice(
+            lastIndex,
+            match.index
+          )
+        );
+
+      }
 
 
-      toggleChat();
+      const boldText =
+        match[1];
+
+
+      const resolved =
+        resolveNavigationTarget(
+          boldText
+        );
+
+
+      if (resolved) {
+
+        element.appendChild(
+          createNavigationLink(
+            resolved.text,
+            resolved.target
+          )
+        );
+
+      } else {
+
+        const strong =
+          document.createElement(
+            "strong"
+          );
+
+        appendPlainText(
+          strong,
+          boldText
+        );
+
+        element.appendChild(
+          strong
+        );
+
+      }
+
+
+      lastIndex =
+        boldPattern.lastIndex;
+
+    }
+
+
+    if (
+      lastIndex <
+      value.length
+    ) {
+
+      appendPlainText(
+        element,
+        value.slice(
+          lastIndex
+        )
+      );
+
+    }
+
+  }
+    /* =========================================================
+     ADD NA'VI MESSAGE
+     ========================================================= */
+
+  function addNaviMessage(
+    text,
+    approvedLinks
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    Object.assign(
+      row.style,
+      {
+
+        display:
+          "flex",
+
+        alignItems:
+          "flex-start",
+
+        gap:
+          "9px",
+
+        marginBottom:
+          "13px"
+
+      }
+    );
+
+
+    const avatar =
+      document.createElement(
+        "img"
+      );
+
+
+    avatar.src =
+      NAVI_STATES[
+        activeState
+      ].image;
+
+
+    avatar.alt =
+      "";
+
+
+    Object.assign(
+      avatar.style,
+      {
+
+        width:
+          "38px",
+
+        height:
+          "38px",
+
+        objectFit:
+          "contain",
+
+        flexShrink:
+          "0"
+
+      }
+    );
+
+
+    const bubble =
+      document.createElement(
+        "div"
+      );
+
+
+    bubble.appendChild(
+      renderNaviMessage(
+        text,
+        approvedLinks
+      )
+    );
+
+
+    Object.assign(
+      bubble.style,
+      {
+
+        background:
+          "#ffffff",
+
+        border:
+          "1px solid #e5eae3",
+
+        borderRadius:
+          "15px",
+
+        padding:
+          "10px 13px",
+
+        fontSize:
+          "13px",
+
+        lineHeight:
+          "1.5",
+
+        color:
+          "#303530",
+
+        maxWidth:
+          "85%",
+
+        boxShadow:
+          "0 2px 7px rgba(0,0,0,0.04)"
+
+      }
+    );
+
+
+    row.appendChild(
+      avatar
+    );
+
+
+    row.appendChild(
+      bubble
+    );
+
+
+    messages.appendChild(
+      row
+    );
+
+
+    body.scrollTop =
+      body.scrollHeight;
+
+  }
+
+
+  /* =========================================================
+     BUILD BRAIN V2 BACKEND PAYLOAD
+     ========================================================= */
+
+  function buildMessagePayload(
+    text
+  ) {
+
+    return {
+
+      learner: {
+
+        message:
+          text
+
+      },
+
+      interface: {
+
+        page:
+          page,
+
+        context:
+          context,
+
+        activeState:
+          activeState
+
+      },
+
+      session: {
+
+        id:
+          sessionId
+
+      }
+
+    };
+
+  }
+
+
+  /* =========================================================
+     SEND MESSAGE TO NA'VI BRAIN
+     ========================================================= */
+
+  async function submitUserMessage(
+    text
+  ) {
+
+    const cleanText =
+      String(
+        text || ""
+      ).trim();
+
+
+    if (!cleanText) {
+      return;
+    }
+
+
+    /*
+       Show the learner's message immediately.
+    */
+
+    addLearnerMessage(
+      cleanText
+    );
+
+
+    /*
+       Clear the input immediately.
+    */
+
+    input.value =
+      "";
+
+
+    /*
+       If no Brain endpoint has been configured,
+       stop here.
+
+       This keeps the frontend usable while the
+       backend endpoint is being configured.
+    */
+
+    if (!CONFIG.apiEndpoint) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const payload =
+        buildMessagePayload(
+          cleanText
+        );
+
+
+      const response =
+        await fetch(
+          CONFIG.apiEndpoint,
+          {
+
+            method:
+              "POST",
+
+            headers:
+              {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+            body:
+              JSON.stringify(
+                payload
+              )
+
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Na’Vi service unavailable."
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      /*
+         Brain V2 returns:
+
+         {
+           ok: true,
+           brain: "Na’Vi Brain",
+           brainVersion: "...",
+           response: {
+             reply: "...",
+             state: "...",
+             links: [...]
+           },
+           context: {...}
+         }
+      */
+
+
+      const brainResponse =
+        data &&
+        data.response;
+
+
+      if (
+        brainResponse &&
+        brainResponse.reply
+      ) {
+
+
+        /*
+           Update Na'Vi's visual state.
+        */
+
+        if (
+          brainResponse.state
+        ) {
+
+          window.NaVi.setState(
+            brainResponse.state
+          );
+
+        }
+
+
+        /*
+           Only accept links that match the
+           approved local navigation registry.
+
+           The Brain cannot provide an arbitrary
+           external URL and have the frontend
+           navigate to it.
+        */
+
+        const approvedLinks =
+          buildApprovedLinks(
+            brainResponse.links
+          );
+
+
+        /*
+           Render the Brain response.
+
+           Module and lesson names supplied through
+           approved links become bold and clickable.
+        */
+
+        addNaviMessage(
+          brainResponse.reply,
+          approvedLinks
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Na’Vi connection error:",
+        error
+      );
 
     }
 
@@ -5062,109 +3411,261 @@
 
 
   /* =========================================================
-     WINDOW RESIZE
+     SEND BUTTON
      ========================================================= */
 
-  function handleWindowResize() {
+  sendButton.addEventListener(
+    "click",
+    function () {
 
-    const character =
-      STATE.elements.character;
-
-
-    if (!character) {
-
-      return;
+      submitUserMessage(
+        input.value
+      );
 
     }
+  );
 
 
-    /*
-     * If the learner has manually positioned Na'Vi,
-     * keep her inside the viewport when the browser changes
-     * size.
-     */
+  /* =========================================================
+     ENTER KEY
+     ========================================================= */
 
-    if (
-      STATE.position
-    ) {
+  input.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+
+        submitUserMessage(
+          input.value
+        );
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     NA'VI STATE CONTROL
+     ========================================================= */
+
+  window.NaVi = {
+
+    setState:
+      function (
+        stateName
+      ) {
+
+        /*
+           Brain V2 state names are mapped to the
+           existing visual states used by the old UI.
+
+           This changes functionality only.
+           The existing images and appearance remain.
+        */
+
+        const stateAliases = {
+
+          confidentGuide:
+            "confidentGuide",
+
+          clarifying:
+            "insightGuide",
+
+          supportive:
+            "encouragingSupport",
+
+          pause:
+            "calmPresence",
+
+          safety:
+            "calmPresence",
+
+          notFound:
+            "insightGuide"
+
+        };
+
+
+        const resolvedState =
+          stateAliases[
+            stateName
+          ] ||
+          stateName;
+
+
+        if (
+          !NAVI_STATES[
+            resolvedState
+          ]
+        ) {
+
+          return false;
+
+        }
+
+
+        activeState =
+          resolvedState;
+
+
+        const image =
+          NAVI_STATES[
+            resolvedState
+          ].image;
+
+
+        if (!image) {
+
+          return false;
+
+        }
+
+
+        mainNavi.src =
+          image;
+
+
+        headerNavi.src =
+          image;
+
+
+        welcomeNavi.src =
+          image;
+
+
+        return true;
+
+      },
+
+
+    getState:
+      function () {
+
+        return activeState;
+
+      },
+
+
+    getContext:
+      function () {
+
+        return {
+
+          page:
+            page,
+
+          context:
+            context,
+
+          sessionId:
+            sessionId
+
+        };
+
+      }
+
+  };
+
+
+  /* =========================================================
+     ADD NA'VI TO SYSTEME.IO
+     ========================================================= */
+
+  wrapper.appendChild(
+    naviButton
+  );
+
+
+  container.appendChild(
+    wrapper
+  );
+
+
+  document.body.appendChild(
+    chat
+  );
+
+
+  /* =========================================================
+     RESTORE PREVIOUS NA'VI POSITION
+     ========================================================= */
+
+  requestAnimationFrame(
+    function () {
+
+      applyStoredPosition();
+
+    }
+  );
+
+
+  /* =========================================================
+     KEEP DRAGGED NA'VI INSIDE THE VIEWPORT
+     ========================================================= */
+
+  window.addEventListener(
+    "resize",
+    function () {
+
+      const stored =
+        getStoredPosition();
+
+
+      if (!stored) {
+        return;
+      }
+
+
+      const rect =
+        naviButton.getBoundingClientRect();
+
 
       const maxLeft =
         Math.max(
-
           0,
-
           window.innerWidth -
-          character.offsetWidth
-
+          rect.width
         );
 
 
       const maxTop =
         Math.max(
-
           0,
-
           window.innerHeight -
-          character.offsetHeight
-
+          rect.height
         );
 
 
       const left =
-        Math.min(
-
-          Math.max(
-
-            0,
-
-            STATE.position.left
-
-          ),
-
+        clamp(
+          rect.left,
+          0,
           maxLeft
-
         );
 
 
       const top =
-        Math.min(
-
-          Math.max(
-
-            0,
-
-            STATE.position.top
-
-          ),
-
+        clamp(
+          rect.top,
+          0,
           maxTop
-
         );
 
 
-      character.style.left =
-        `${left}px`;
+      wrapper.style.left =
+        left + "px";
 
 
-      character.style.top =
-        `${top}px`;
-
-
-      character.style.right =
-        "auto";
-
-
-      character.style.bottom =
-        "auto";
-
-
-      STATE.position = {
-
-        left,
-
-        top
-
-      };
+      wrapper.style.top =
+        top + "px";
 
 
       savePosition(
@@ -5173,487 +3674,7 @@
       );
 
     }
+  );
 
-  }
-
-
-  /* =========================================================
-     EVENT BINDING
-     ========================================================= */
-
-  function bindEvents() {
-
-    const character =
-      STATE.elements.character;
-
-
-    const close =
-      STATE.elements.close;
-
-
-    const send =
-      STATE.elements.send;
-
-
-    const input =
-      STATE.elements.input;
-
-
-    if (character) {
-
-      character.addEventListener(
-
-        "pointerdown",
-
-        beginCharacterDrag
-
-      );
-
-
-      character.addEventListener(
-
-        "pointermove",
-
-        moveCharacter
-
-      );
-
-
-      character.addEventListener(
-
-        "pointerup",
-
-        endCharacterDrag
-
-      );
-
-
-      character.addEventListener(
-
-        "pointercancel",
-
-        endCharacterDrag
-
-      );
-
-
-      character.addEventListener(
-
-        "click",
-
-        handleCharacterClick
-
-      );
-
-
-      character.addEventListener(
-
-        "keydown",
-
-        handleCharacterKeydown
-
-      );
-
-    }
-
-
-    if (close) {
-
-      close.addEventListener(
-
-        "click",
-
-        closeChat
-
-      );
-
-    }
-
-
-    if (send) {
-
-      send.addEventListener(
-
-        "click",
-
-        submitInput
-
-      );
-
-    }
-
-
-    if (input) {
-
-      input.addEventListener(
-
-        "keydown",
-
-        handleInputKeydown
-
-      );
-
-
-      input.addEventListener(
-
-        "input",
-
-        resizeInput
-
-      );
-
-    }
-
-
-    window.addEventListener(
-
-      "resize",
-
-      handleWindowResize
-
-    );
-
-  }
-
-
-  /* =========================================================
-     INITIAL GREETING
-     ========================================================= */
-
-  function initializeGreeting() {
-
-    /*
-     * This is only the visual starting state.
-     *
-     * No Brain request is made here.
-     */
-
-    setVisualState(
-      "friendlyWave"
-    );
-
-
-    setDefaultQuickActions();
-
-  }
-
-
-  /* =========================================================
-     INITIALIZE INTERNAL STATE
-     ========================================================= */
-
-  function initializeState() {
-
-    STATE.sessionId =
-      getSessionId();
-
-
-    initializePageContext();
-
-  }
-
-
-  /* =========================================================
-     REFRESH PAGE CONTEXT
-     =========================================================
-
-     Useful if the host page changes the data attributes
-     without completely rebuilding the page.
-     ========================================================= */
-
-  function refreshPageContext() {
-
-    initializePageContext();
-
-  }
-
-
-  /* =========================================================
-     PUBLIC Na'Vi API
-     =========================================================
-
-     A deliberately small public interface.
-
-     The API allows the host page to:
-
-       • open Na'Vi
-       • close Na'Vi
-       • toggle Na'Vi
-       • ask Na'Vi a question
-       • change visual state
-       • refresh page context
-
-     It does NOT expose Brain internals.
-     ========================================================= */
-
-  function exposePublicAPI() {
-
-    window.NaVi =
-      window.NaVi ||
-      {};
-
-
-    window.NaVi.open =
-      openChat;
-
-
-    window.NaVi.close =
-      closeChat;
-
-
-    window.NaVi.toggle =
-      toggleChat;
-
-
-    window.NaVi.ask =
-      sendMessage;
-
-
-    window.NaVi.setState =
-      setVisualState;
-
-
-    window.NaVi.refreshContext =
-      refreshPageContext;
-
-  }
-
-
-  /* =========================================================
-     FRONTEND SAFETY CHECK
-     ========================================================= */
-
-  function frontendSafetyCheck() {
-
-    const requiredConfig = [
-
-      "apiEndpoint",
-
-      "protocol",
-
-      "protocolVersion"
-
-    ];
-
-
-    for (
-      let i = 0;
-      i < requiredConfig.length;
-      i++
-    ) {
-
-      const key =
-        requiredConfig[i];
-
-
-      if (
-        !CONFIG[key]
-      ) {
-
-        console.warn(
-
-          `Na'Vi Frontend: missing CONFIG.${key}`
-
-        );
-
-      }
-
-    }
-
-
-    if (
-      typeof window.fetch !==
-        "function"
-    ) {
-
-      console.error(
-
-        "Na'Vi Frontend: fetch is not available."
-
-      );
-
-
-      return false;
-
-    }
-
-
-    return true;
-
-  }
-
-
-  /* =========================================================
-     FRONTEND RECOVERY
-     ========================================================= */
-
-  function recoverFrontend() {
-
-    STATE.processing =
-      false;
-
-
-    removeTyping();
-
-
-    setSendDisabled(
-      false
-    );
-
-
-    if (
-      STATE.elements &&
-      STATE.elements.character
-    ) {
-
-      setVisualState(
-        "calm"
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     INITIALIZATION
-     ========================================================= */
-
-  function initialize() {
-
-    /*
-     * Prevent the frontend from being initialized twice.
-     */
-
-    if (
-      STATE.initialized
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-     * Verify the basic browser requirements before creating
-     * the interface.
-     */
-
-    if (
-      !frontendSafetyCheck()
-    ) {
-
-      return;
-
-    }
-
-
-    STATE.initialized =
-      true;
-
-
-    /* -------------------------------------------------------
-       INTERNAL STATE
-       ------------------------------------------------------- */
-
-    initializeState();
-
-
-    /* -------------------------------------------------------
-       CSS
-       ------------------------------------------------------- */
-
-    injectStyles();
-
-
-    /* -------------------------------------------------------
-       INTERFACE
-       ------------------------------------------------------- */
-
-    createInterface();
-
-
-    /*
-     * Apply the default position after the interface has
-     * been inserted into the document.
-     */
-
-    requestAnimationFrame(
-
-      function () {
-
-        applyDefaultCharacterPosition();
-
-      }
-
-    );
-
-
-    /* -------------------------------------------------------
-       EVENTS
-       ------------------------------------------------------- */
-
-    bindEvents();
-
-
-    /* -------------------------------------------------------
-       INITIAL VISUAL STATE
-       ------------------------------------------------------- */
-
-    initializeGreeting();
-
-
-    /* -------------------------------------------------------
-       PUBLIC API
-       ------------------------------------------------------- */
-
-    exposePublicAPI();
-
-  }
-
-
-  /* =========================================================
-     DOM READY
-     ========================================================= */
-
-  if (
-    document.readyState ===
-      "loading"
-  ) {
-
-    document.addEventListener(
-
-      "DOMContentLoaded",
-
-      initialize,
-
-      {
-        once:
-          true
-      }
-
-    );
-
-  } else {
-
-    initialize();
-
-  }
-
-
-  /* =========================================================
-     FINAL FRONTEND BOOT
-     =========================================================
-
-     Nothing below this point is required.
-
-     The IIFE closes here so that internal variables and
-     functions do not leak into the global browser scope.
-
-     The only intentional public object is:
-
-       window.NaVi
-
-     ========================================================= */
 
 })();
