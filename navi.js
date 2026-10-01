@@ -15,9 +15,10 @@
     defaultImage:
       "https://d1yei2z3i6k35z.cloudfront.net/10602272/6aa12c0a38e7b5.84659750_Na-vi1.gif",
 
+
     /* -------------------------------------------------------
        SECURE BACKEND
-       
+
        The OpenAI/Cloudflare endpoint will be added here
        after the CONTROL Knowledge Base is finalized.
 
@@ -27,31 +28,42 @@
     apiEndpoint:
       "https://navi-brain.clarityframework01.workers.dev",
 
+
     /* -------------------------------------------------------
        NA'VI SIZE
        ------------------------------------------------------- */
 
     characterWidth: 120,
 
+
     /* -------------------------------------------------------
        CHAT SIZE
        ------------------------------------------------------- */
 
     chatWidth: 380,
+
     chatHeight: 560,
+
 
     /* -------------------------------------------------------
        CHAT POSITION
        ------------------------------------------------------- */
 
     chatRight: 20,
+
     chatBottom: 20,
+
 
     /* -------------------------------------------------------
        DRAG SETTINGS
        ------------------------------------------------------- */
 
     dragThreshold: 6,
+
+
+    /* -------------------------------------------------------
+       POSITION STORAGE
+       ------------------------------------------------------- */
 
     positionStorageKey:
       "navi_companion_position"
@@ -220,6 +232,578 @@
 
 
   /* =========================================================
+     APPROVED NAVIGATION TARGETS
+
+     These are the only Course destinations Na'Vi may make
+     clickable.
+
+     The Brain returns target references.
+
+     This frontend resolves those references locally.
+
+     The Brain never supplies URLs.
+     ========================================================= */
+
+  const NAVIGATION_TARGETS = {
+
+    "Introduction — How to Move Through This Program with Focus":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9729368",
+
+
+    "Module 1 — Calm the Overload":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9541102",
+
+    "Module 2 — Organise Your Focus":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9541312",
+
+    "Module 3 — Navigate Your Pace":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9877771",
+
+    "Module 4 — Turn Learning Into Action":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9966546",
+
+    "Module 5 — Reduce Noise":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967621",
+
+    "Module 6 — Observe Progress":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976023",
+
+    "Module 7 — Lead Your Journey":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976310",
+
+    "Module 8 — Long-term Control":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986010",
+
+    "Maintaining Momentum":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/10387114",
+
+
+    /* -------------------------------------------------------
+       MODULE 1
+       ------------------------------------------------------- */
+
+    "Calm The Overload":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9541102",
+
+    "Understanding why Digital Learning can feel Overwhelming":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/10002209",
+
+    "Why Overwhelm Happens":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9748811",
+
+    "Your Brain Has Limits":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9748888",
+
+    "Clarity Before Consumption":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9748894",
+
+    "Your First Action":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9748899",
+
+    "Optional Reflection Submission Module 1":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9748909",
+
+
+    /* -------------------------------------------------------
+       MODULE 2
+       ------------------------------------------------------- */
+
+    "Organise Your Focus":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9541312",
+
+    "Too Many Directions Create Confusion":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9826634",
+
+    "The One Priority Rule":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9826716",
+
+    "Focus Creates Progress":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9826720",
+
+    "Optional Reflection Submission Module 2":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9826740",
+
+    "Module 2 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9826740",
+
+
+    /* -------------------------------------------------------
+       MODULE 3
+       ------------------------------------------------------- */
+
+    "Navigate Your Pace":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9877771",
+
+    "You Do Not Need to Carry Everything at Once":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9885942",
+
+    "Think of It Like Packing for a Trip":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886070",
+
+    "Must-Do Now vs Save for Later":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886203",
+
+    "Save for Later Still Needs a Home":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886290",
+
+    "Follow Importance, Not Order of Appearance":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886311",
+
+    "Build a Rhythm You Can Repeat":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886358",
+
+    "Small Action for This Week":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886841",
+
+    "Optional Reflection Submission":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886865",
+
+    "Module 3 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9886865",
+
+
+    /* -------------------------------------------------------
+       MODULE 4
+       ------------------------------------------------------- */
+
+    "Turn Learning Into Action":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9966546",
+
+    "Collecting Information is Not the Same as Taking Action":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967128",
+
+    "Use the 20-Minute Progress Rule":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967179",
+
+    "Turn Every Lesson into One Visible Action":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967348",
+
+    "Small Actions Build Confidence":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967376",
+
+    "Your Action Step for This Week":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967393",
+
+    "Module 4 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967441",
+
+
+    /* -------------------------------------------------------
+       MODULE 5
+       ------------------------------------------------------- */
+
+    "Reduce Noise":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9967621",
+
+    "Enter with a Purpose":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975899",
+
+    "It is OK to Be a Quiet Learner":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975913",
+
+    "Social Media is not Your To-Do List":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975923",
+
+    "Be Present in More Than One Place":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975937",
+
+    "Set Boundaries That Protect Your Attention":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975952",
+
+    "Module 5 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9975987",
+
+
+    /* -------------------------------------------------------
+       MODULE 6
+       ------------------------------------------------------- */
+
+    "Observe Progress":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976023",
+
+    "Progress is often Visible Inside Before It Shows Outside":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976169",
+
+    "Look for Early Progress Signals":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976176",
+
+    "Stay With the Goal. Adjust the Strategy":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976194",
+
+    "Measure Process, Not Just Outcome":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976211",
+
+    "Small Wins Build Confidence":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976223",
+
+    "Patience Becomes Easier When You Can See Proof":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976228",
+
+    "Module 6 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976263",
+
+
+    /* -------------------------------------------------------
+       MODULE 7
+       ------------------------------------------------------- */
+
+    "Leading Your Journey":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976310",
+
+    "You Are Not Just Taking a Course. You are Leading":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976326",
+
+    "Learning Alone is Not Enough":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976705",
+
+    "Consistency Builds Confidence":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976712",
+
+    "Finish Small Things to Build Momentum":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976720",
+
+    "Turn Lessons into Practical Output":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976727",
+
+    "Staying Consistent is a Form of Leadership":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976778",
+
+    "Module 7 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9985959",
+
+
+    /* -------------------------------------------------------
+       MODULE 8
+       ------------------------------------------------------- */
+
+    "Long-term Control":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986010",
+
+    "Digital Programs Can Change Your Life":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986066",
+
+    "Come Back to the Cycle":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986084",
+
+    "Consistency Matters More Than Intensity":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986096",
+
+    "You Can Return to this Course Anytime":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986107",
+
+    "Completion Creates Momentum":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986114",
+
+    "Your Next Step Is Simple":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986143",
+
+    "Module 8 Reflection Check-In":
+      "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986190"
+
+  };
+
+
+  /* =========================================================
+     NAVIGATION ALIASES
+
+     The Brain may return short learner-facing references
+     such as "Module 1".
+
+     These are resolved to confirmed Knowledge Base
+     navigation targets.
+     ========================================================= */
+
+  const NAVIGATION_ALIASES = {
+
+    "Introduction":
+      "Introduction — How to Move Through This Program with Focus",
+
+    "Module 1":
+      "Module 1 — Calm the Overload",
+
+    "Module 2":
+      "Module 2 — Organise Your Focus",
+
+    "Module 3":
+      "Module 3 — Navigate Your Pace",
+
+    "Module 4":
+      "Module 4 — Turn Learning Into Action",
+
+    "Module 5":
+      "Module 5 — Reduce Noise",
+
+    "Module 6":
+      "Module 6 — Observe Progress",
+
+    "Module 7":
+      "Module 7 — Lead Your Journey",
+
+    "Module 8":
+      "Module 8 — Long-term Control",
+
+    "Long-Term Control":
+      "Module 8 — Long-term Control",
+
+    "Long-term Control":
+      "Module 8 — Long-term Control"
+
+  };
+
+
+  /* =========================================================
+     RESOLVE NAVIGATION TARGET
+     ========================================================= */
+
+  function resolveNavigationTarget(
+    target
+  ) {
+
+    const normalized =
+      String(
+        target || ""
+      )
+        .trim()
+        .replace(
+          /\s+/g,
+          " "
+        );
+
+
+    if (!normalized) {
+      return null;
+    }
+
+
+    const canonical =
+      NAVIGATION_ALIASES[
+        normalized
+      ] ||
+      normalized;
+
+
+    const url =
+      NAVIGATION_TARGETS[
+        canonical
+      ];
+
+
+    if (!url) {
+      return null;
+    }
+
+
+    return {
+
+      text:
+        normalized,
+
+      target:
+        canonical,
+
+      url:
+        url
+
+    };
+
+  }
+
+
+  /* =========================================================
+     BUILD APPROVED LINKS
+     ========================================================= */
+
+  function buildApprovedLinks(
+    links
+  ) {
+
+    if (
+      !Array.isArray(
+        links
+      )
+    ) {
+
+      return [];
+
+    }
+
+
+    const approved =
+      [];
+
+
+    links
+      .slice(
+        0,
+        8
+      )
+      .forEach(
+        function (
+          link
+        ) {
+
+          if (
+            !link ||
+            typeof link !==
+              "object"
+          ) {
+
+            return;
+
+          }
+
+
+          const text =
+            typeof link.text ===
+              "string"
+
+              ? link.text.trim()
+
+              : "";
+
+
+          const target =
+            typeof link.target ===
+              "string"
+
+              ? link.target.trim()
+
+              : "";
+
+
+          if (
+            !text ||
+            !target
+          ) {
+
+            return;
+
+          }
+
+
+          const resolved =
+            resolveNavigationTarget(
+              target
+            );
+
+
+          if (!resolved) {
+            return;
+          }
+
+
+          const duplicate =
+            approved.some(
+              function (
+                item
+              ) {
+
+                return (
+                  item.url ===
+                  resolved.url
+                );
+
+              }
+            );
+
+
+          if (duplicate) {
+            return;
+          }
+
+
+          approved.push({
+
+            text:
+              text,
+
+            target:
+              resolved.target,
+
+            url:
+              resolved.url
+
+          });
+
+        }
+      );
+
+
+    return approved;
+
+  }
+
+
+  /* =========================================================
+     CREATE SAFE NAVIGATION LINK
+     ========================================================= */
+
+  function createNavigationLink(
+    link,
+    label
+  ) {
+
+    const anchor =
+      document.createElement(
+        "a"
+      );
+
+
+    anchor.href =
+      link.url;
+
+
+    anchor.target =
+      "_self";
+
+
+    anchor.rel =
+      "noopener";
+
+
+    anchor.textContent =
+      label ||
+      link.text;
+
+
+    anchor.setAttribute(
+      "data-navi-target",
+      link.target
+    );
+
+
+    anchor.setAttribute(
+      "data-navi-approved",
+      "true"
+    );
+
+
+    Object.assign(
+      anchor.style,
+      {
+
+        color:
+          "#176b3a",
+
+        fontWeight:
+          "700",
+
+        textDecoration:
+          "underline",
+
+        cursor:
+          "pointer"
+
+      }
+    );
+
+
+    return anchor;
+
+  }
+
+
+  /* =========================================================
      FIND SYSTEME.IO NA'VI LOCATION
      ========================================================= */
 
@@ -229,8 +813,12 @@
     );
 
 
-  if (!container) {
+  if (
+    !container
+  ) {
+
     return;
+
   }
 
 
@@ -265,7 +853,9 @@
     );
 
 
-  if (!sessionId) {
+  if (
+    !sessionId
+  ) {
 
     sessionId =
       "navi-" +
@@ -273,7 +863,10 @@
       "-" +
       Math.random()
         .toString(36)
-        .slice(2, 10);
+        .slice(
+          2,
+          10
+        );
 
 
     sessionStorage.setItem(
@@ -498,9 +1091,10 @@
   /* =========================================================
      CHAT WINDOW
 
-     The chat is fixed to the browser viewport.
+     The original Na'Vi interface is intentionally retained.
 
-     It is independent from Na'Vi's position.
+     It is fixed to the browser viewport and independent
+     from Na'Vi's character position.
      ========================================================= */
 
   const chat =
@@ -1157,7 +1751,9 @@
 
 
   quickOptions.forEach(
-    function (option) {
+    function (
+      option
+    ) {
 
       const button =
         document.createElement(
@@ -1499,8 +2095,12 @@
 
   function openChat() {
 
-    if (chatOpen) {
+    if (
+      chatOpen
+    ) {
+
       return;
+
     }
 
 
@@ -1519,8 +2119,12 @@
 
   function closeChat() {
 
-    if (!chatOpen) {
+    if (
+      !chatOpen
+    ) {
+
       return;
+
     }
 
 
@@ -1532,9 +2136,7 @@
       "none";
 
   }
-
-
-  function toggleChat() {
+    function toggleChat() {
 
     if (chatOpen) {
 
@@ -1864,13 +2466,12 @@
 
 
     /*
-
        Once dragging begins, switch the wrapper to fixed
        viewport positioning.
 
        This allows Na'Vi to move anywhere on screen.
-
     */
+
 
     wrapper.style.position =
       "fixed";
@@ -2158,8 +2759,9 @@
      NA'VI MESSAGE
      ========================================================= */
 
-    function renderNaviMessage(
-    text
+  function renderNaviMessage(
+    text,
+    approvedLinks
   ) {
 
     const fragment =
@@ -2219,7 +2821,8 @@
 
           appendNaviInlineMarkdown(
             item,
-            match[2]
+            match[2],
+            approvedLinks
           );
 
           list.appendChild(
@@ -2241,7 +2844,8 @@
 
         appendNaviInlineMarkdown(
           paragraph,
-          trimmed
+          trimmed,
+          approvedLinks
         );
 
         fragment.appendChild(
@@ -2256,125 +2860,199 @@
   }
 
 
-function appendNaviInlineMarkdown(
-  element,
-  text
-) {
+  function appendNaviInlineMarkdown(
+    element,
+    text,
+    approvedLinks
+  ) {
 
-  const parts =
-    String(text || "").split(
-      /(\[[^\]]+\]\(https:\/\/www\.godigicraft\.com\/[^)\s]+\)|\*\*[^*]+\*\*)/g
-    );
+    const value = String(text || "");
+    const links = Array.isArray(approvedLinks) ? approvedLinks : [];
 
-  parts.forEach(
-    function (part) {
+    const sortedLinks =
+      links.slice().sort(function (a, b) {
+        return b.text.length - a.text.length;
+      });
 
-      /* -------------------------------------------------------
-         VERIFIED MARKDOWN LINK
-         ------------------------------------------------------- */
+    const boldPattern = /\*\*([\s\S]+?)\*\*/g;
+    let lastIndex = 0;
+    let match;
 
-      const linkMatch =
-        part.match(
-          /^\[([^\]]+)\]\((https:\/\/www\.godigicraft\.com\/[^)\s]+)\)$/
-        );
 
-      if (linkMatch) {
+    function appendPlainText(parent, plainText) {
 
-        const linkText =
-          linkMatch[1];
+      let remaining =
+        String(plainText || "");
 
-        const linkUrl =
-          linkMatch[2];
 
-        const link =
-          document.createElement(
-            "a"
-          );
+      while (remaining.length) {
 
-        link.textContent =
-          linkText;
+        let best = null;
+        let bestIndex = -1;
 
-        link.href =
-          linkUrl;
 
-        link.target =
-          "_blank";
+        sortedLinks.forEach(function (link) {
 
-        link.rel =
-          "noopener noreferrer";
+          const index =
+            remaining.indexOf(
+              link.text
+            );
 
-        Object.assign(
-          link.style,
-          {
 
-            color:
-              "#176b3a",
+          if (
+            index !== -1 &&
+            (
+              bestIndex === -1 ||
+              index < bestIndex ||
+              (
+                index === bestIndex &&
+                link.text.length >
+                  best.text.length
+              )
+            )
+          ) {
 
-            fontWeight:
-              "600",
+            best =
+              link;
 
-            textDecoration:
-              "underline",
-
-            cursor:
-              "pointer"
+            bestIndex =
+              index;
 
           }
+
+        });
+
+
+        if (!best) {
+
+          parent.appendChild(
+            document.createTextNode(
+              remaining
+            )
+          );
+
+          return;
+
+        }
+
+
+        if (bestIndex > 0) {
+
+          parent.appendChild(
+            document.createTextNode(
+              remaining.slice(
+                0,
+                bestIndex
+              )
+            )
+          );
+
+        }
+
+
+        parent.appendChild(
+          createNavigationLink(
+            best,
+            best.text
+          )
         );
 
-        element.appendChild(
-          link
+
+        remaining =
+          remaining.slice(
+            bestIndex +
+              best.text.length
+          );
+
+      }
+
+    }
+
+
+    while (
+      (match =
+        boldPattern.exec(value))
+    ) {
+
+      if (match.index > lastIndex) {
+
+        appendPlainText(
+          element,
+          value.slice(
+            lastIndex,
+            match.index
+          )
         );
 
-        return;
       }
 
 
-      /* -------------------------------------------------------
-         BOLD TEXT
-         ------------------------------------------------------- */
+      const boldText =
+        match[1];
 
-      if (
-        part.startsWith("**") &&
-        part.endsWith("**")
-      ) {
 
-        const bold =
+      const resolved =
+        resolveNavigationTarget(
+          boldText
+        );
+
+
+      if (resolved) {
+
+        element.appendChild(
+          createNavigationLink(
+            resolved,
+            resolved.text
+          )
+        );
+
+      } else {
+
+        const strong =
           document.createElement(
             "strong"
           );
 
-        bold.textContent =
-          part.slice(
-            2,
-            -2
-          );
-
-        element.appendChild(
-          bold
+        appendPlainText(
+          strong,
+          boldText
         );
 
-        return;
+        element.appendChild(
+          strong
+        );
+
       }
 
 
-      /* -------------------------------------------------------
-         NORMAL TEXT
-         ------------------------------------------------------- */
+      lastIndex =
+        boldPattern.lastIndex;
 
-      element.appendChild(
-        document.createTextNode(
-          part
+    }
+
+
+    if (
+      lastIndex <
+      value.length
+    ) {
+
+      appendPlainText(
+        element,
+        value.slice(
+          lastIndex
         )
       );
 
     }
-  );
 
-}
+  }
+    /* =========================================================
+     ADD NA'VI MESSAGE
+     ========================================================= */
 
-function addNaviMessage(
-    text
+  function addNaviMessage(
+    text,
+    approvedLinks
   ) {
 
     const row =
@@ -2445,9 +3123,10 @@ function addNaviMessage(
       );
 
 
-        bubble.appendChild(
+    bubble.appendChild(
       renderNaviMessage(
-        text
+        text,
+        approvedLinks
       )
     );
 
@@ -2509,7 +3188,7 @@ function addNaviMessage(
 
 
   /* =========================================================
-     BUILD BACKEND PAYLOAD
+     BUILD BRAIN V2 BACKEND PAYLOAD
      ========================================================= */
 
   function buildMessagePayload(
@@ -2518,26 +3197,32 @@ function addNaviMessage(
 
     return {
 
-      message:
-        text,
+      learner: {
 
-      sessionId:
-        sessionId,
+        message:
+          text
 
-      page:
-        page,
+      },
 
-      context:
-        context,
+      interface: {
 
-      activeState:
-        activeState,
+        page:
+          page,
 
-      companion:
-        "Na’Vi",
+        context:
+          context,
 
-      framework:
-        "CONTROL Framework"
+        activeState:
+          activeState
+
+      },
+
+      session: {
+
+        id:
+          sessionId
+
+      }
 
     };
 
@@ -2545,10 +3230,7 @@ function addNaviMessage(
 
 
   /* =========================================================
-     SEND MESSAGE
-
-     The backend connection will be activated when
-     CONFIG.apiEndpoint is populated.
+     SEND MESSAGE TO NA'VI BRAIN
      ========================================================= */
 
   async function submitUserMessage(
@@ -2566,17 +3248,35 @@ function addNaviMessage(
     }
 
 
+    /*
+       Show the learner's message immediately.
+    */
+
     addLearnerMessage(
       cleanText
     );
 
 
+    /*
+       Clear the input immediately.
+    */
+
     input.value =
       "";
 
 
+    /*
+       If no Brain endpoint has been configured,
+       stop here.
+
+       This keeps the frontend usable while the
+       backend endpoint is being configured.
+    */
+
     if (!CONFIG.apiEndpoint) {
+
       return;
+
     }
 
 
@@ -2598,8 +3298,10 @@ function addNaviMessage(
 
             headers:
               {
+
                 "Content-Type":
                   "application/json"
+
               },
 
             body:
@@ -2621,22 +3323,80 @@ function addNaviMessage(
 
 
       const data =
-  await response.json();
+        await response.json();
 
-if (
-  data &&
-  data.reply
-) {
 
-  if (data.state) {
-    window.NaVi.setState(data.state);
-  }
+      /*
+         Brain V2 returns:
 
-  addNaviMessage(
-    data.reply
-  );
+         {
+           ok: true,
+           brain: "Na’Vi Brain",
+           brainVersion: "...",
+           response: {
+             reply: "...",
+             state: "...",
+             links: [...]
+           },
+           context: {...}
+         }
+      */
 
-}
+
+      const brainResponse =
+        data &&
+        data.response;
+
+
+      if (
+        brainResponse &&
+        brainResponse.reply
+      ) {
+
+
+        /*
+           Update Na'Vi's visual state.
+        */
+
+        if (
+          brainResponse.state
+        ) {
+
+          window.NaVi.setState(
+            brainResponse.state
+          );
+
+        }
+
+
+        /*
+           Only accept links that match the
+           approved local navigation registry.
+
+           The Brain cannot provide an arbitrary
+           external URL and have the frontend
+           navigate to it.
+        */
+
+        const approvedLinks =
+          buildApprovedLinks(
+            brainResponse.links
+          );
+
+
+        /*
+           Render the Brain response.
+
+           Module and lesson names supplied through
+           approved links become bold and clickable.
+        */
+
+        addNaviMessage(
+          brainResponse.reply,
+          approvedLinks
+        );
+
+      }
 
     } catch (error) {
 
@@ -2681,6 +3441,7 @@ if (
 
         event.preventDefault();
 
+
         submitUserMessage(
           input.value
         );
@@ -2698,11 +3459,51 @@ if (
   window.NaVi = {
 
     setState:
-      function (stateName) {
+      function (
+        stateName
+      ) {
+
+        /*
+           Brain V2 state names are mapped to the
+           existing visual states used by the old UI.
+
+           This changes functionality only.
+           The existing images and appearance remain.
+        */
+
+        const stateAliases = {
+
+          confidentGuide:
+            "confidentGuide",
+
+          clarifying:
+            "insightGuide",
+
+          supportive:
+            "encouragingSupport",
+
+          pause:
+            "calmPresence",
+
+          safety:
+            "calmPresence",
+
+          notFound:
+            "insightGuide"
+
+        };
+
+
+        const resolvedState =
+          stateAliases[
+            stateName
+          ] ||
+          stateName;
+
 
         if (
           !NAVI_STATES[
-            stateName
+            resolvedState
           ]
         ) {
 
@@ -2712,12 +3513,12 @@ if (
 
 
         activeState =
-          stateName;
+          resolvedState;
 
 
         const image =
           NAVI_STATES[
-            stateName
+            resolvedState
           ].image;
 
 
@@ -2776,12 +3577,6 @@ if (
 
   /* =========================================================
      ADD NA'VI TO SYSTEME.IO
-
-     Initial placement:
-       Exactly where the #navi-companion block exists.
-
-     The chat is attached to the document body:
-       Bottom-right of the browser.
      ========================================================= */
 
   wrapper.appendChild(
@@ -2801,12 +3596,6 @@ if (
 
   /* =========================================================
      RESTORE PREVIOUS NA'VI POSITION
-
-     If the learner has previously moved Na'Vi, restore
-     her position.
-
-     Otherwise she remains exactly where the
-     #navi-companion block has been placed.
      ========================================================= */
 
   requestAnimationFrame(
@@ -2886,5 +3675,6 @@ if (
 
     }
   );
+
 
 })();
