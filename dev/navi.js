@@ -271,7 +271,7 @@
     "Module 7 — Lead Your Journey":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9976310",
 
-    "Module 8 — Long-term Control":
+    "Module 8 — Sustain Your Momentum":
       "https://www.godigicraft.com/school/course/self-control-framework-for-digital-program-navigation/lecture/9986010",
 
     "Maintaining Momentum":
@@ -540,13 +540,13 @@
       "Module 7 — Lead Your Journey",
 
     "Module 8":
-      "Module 8 — Long-term Control",
+      "Module 8 — Sustain Your Momentum",
 
     "Long-Term Control":
-      "Module 8 — Long-term Control",
+      "Long-term Control",
 
     "Long-term Control":
-      "Module 8 — Long-term Control"
+      "Long-term Control"
 
   };
 
