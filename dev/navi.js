@@ -237,6 +237,9 @@
      These are the only Course destinations Na'Vi may make
      clickable.
 
+     Module aliases intentionally resolve to the first verified
+     lesson for that module because no separate module URL exists.
+
      The Brain returns target references.
 
      This frontend resolves those references locally.
@@ -546,7 +549,20 @@
       "Long-term Control",
 
     "Long-term Control":
-      "Long-term Control"
+      "Long-term Control",
+
+    /* Explicit lesson-navigation phrases */
+    "Module 8 Lesson 1":
+      "Long-term Control",
+
+    "Module 8, Lesson 1":
+      "Long-term Control",
+
+    "Lesson 1 — Long-term Control":
+      "Long-term Control",
+
+    "Module 7 — Leading Your Journey":
+      "Leading Your Journey"
 
   };
 
@@ -575,17 +591,48 @@
     }
 
 
+    const exactAlias =
+      NAVIGATION_ALIASES[normalized];
+
+    const lowerNormalized =
+      normalized.toLocaleLowerCase();
+
+    const caseInsensitiveAliasKey =
+      Object.keys(NAVIGATION_ALIASES).find(
+        function (key) {
+          return key.toLocaleLowerCase() === lowerNormalized;
+        }
+      );
+
     const canonical =
-      NAVIGATION_ALIASES[
-        normalized
-      ] ||
+      exactAlias ||
+      (
+        caseInsensitiveAliasKey
+          ? NAVIGATION_ALIASES[caseInsensitiveAliasKey]
+          : null
+      ) ||
       normalized;
 
 
+    const exactUrl =
+      NAVIGATION_TARGETS[canonical];
+
+    const caseInsensitiveTargetKey =
+      exactUrl
+        ? null
+        : Object.keys(NAVIGATION_TARGETS).find(
+            function (key) {
+              return key.toLocaleLowerCase() === canonical.toLocaleLowerCase();
+            }
+          );
+
     const url =
-      NAVIGATION_TARGETS[
-        canonical
-      ];
+      exactUrl ||
+      (
+        caseInsensitiveTargetKey
+          ? NAVIGATION_TARGETS[caseInsensitiveTargetKey]
+          : null
+      );
 
 
     if (!url) {
