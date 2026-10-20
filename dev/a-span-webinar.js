@@ -133,6 +133,36 @@
 
     }
 
+    // ==========================================
+    // USAGE REPORT (observe only)
+    // ==========================================
+
+    function reportUsage() {
+
+        try {
+
+            const key = "bs_report_webinar";
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            if (localStorage.getItem(key) === today) return;
+
+            localStorage.setItem(key, today);
+
+            fetch("https://sentraal-reporter.buttonsentraal.workers.dev", {
+
+                method: "POST",
+
+                body: JSON.stringify({ tool: "Webinar Button" }),
+
+                keepalive: true
+
+            }).catch(function () {});
+
+        } catch (e) {}
+
+    }
+
         // ==========================================
     // START
     // ==========================================
@@ -142,6 +172,8 @@
         injectStyles();
 
         createButton();
+
+        reportUsage();
 
     }
 
